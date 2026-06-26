@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"id": "social_contract",
+	"version": "${version}",
+	"name": "social_contract",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Jlopez271828"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/social_contract/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"jlopez271828.social_contract.Social_contract"
+		],
+		"fabric-datagen": [
+			"jlopez271828.social_contract.Social_contractDataGenerator"
+		]
+	},
+	"mixins": [
+      "social_contract.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~26.1.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

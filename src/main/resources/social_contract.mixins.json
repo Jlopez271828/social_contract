@@ -1,0 +1,17 @@
+{
+	"required": true,
+	"package": "jlopez271828.social_contract.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"LightingAccessor",
+        "VillagerMixin",
+        "VillagerBoundRandomStrollMixin",
+        "BedBlockMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
