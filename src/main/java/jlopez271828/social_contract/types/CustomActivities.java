@@ -1,4 +1,4 @@
-package jlopez271828.social_contract;
+package jlopez271828.social_contract.types;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

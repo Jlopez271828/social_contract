@@ -10,4 +10,4 @@ pluginManagement {
 }
 
 // Should match your modid
-rootProject.name = 'social_contract2'
+rootProject.name = 'social_contract'

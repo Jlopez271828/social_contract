@@ -1,6 +1,8 @@
 package jlopez271828.social_contract;
 
 import jlopez271828.social_contract.mixin.LightingAccessor;
+import jlopez271828.social_contract.types.AttachmentTypes;
+import jlopez271828.social_contract.types.CustomMemoryModuleType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;

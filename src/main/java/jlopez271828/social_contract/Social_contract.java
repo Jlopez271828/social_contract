@@ -1,7 +1,19 @@
 package jlopez271828.social_contract;
 
+import jlopez271828.social_contract.networking.ClientBoundMerchantInfoPayload;
+import jlopez271828.social_contract.networking.ServerBoundFollowRequestPayload;
+import jlopez271828.social_contract.types.AttachmentTypes;
+import jlopez271828.social_contract.types.CustomMemoryModuleType;
+import jlopez271828.social_contract.types.CustomMenuTypes;
+import jlopez271828.social_contract.types.CustomSensorTypes;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +35,33 @@ public class Social_contract implements ModInitializer {
 
         CustomMemoryModuleType.initialize();
         CustomSensorTypes.initialize();
+        CustomMenuTypes.initialize();
+        ExtraVillagerScreenWidgets.initialize();
+
+        PayloadTypeRegistry.serverboundPlay().register(ServerBoundFollowRequestPayload.TYPE, ServerBoundFollowRequestPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(ClientBoundMerchantInfoPayload.TYPE, ClientBoundMerchantInfoPayload.CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(ServerBoundFollowRequestPayload.TYPE, (payload, context) -> {
+
+            LOGGER.info("recieved entityId: {} from a server bound packet", payload.entityId());
+
+            Entity entity = context.player().level().getEntity(payload.entityId());
+
+            if(entity instanceof Villager){
+                LOGGER.info("found requested villager entity");
+            }
+
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(ClientBoundMerchantInfoPayload.TYPE, (payload, context) -> {
+
+            LOGGER.info("recieved entityId: {} and containerId: {} from a client bound packet", payload.entityId(), payload.containerId());
+
+            Player player = context.player();
+
+            player.setAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT, payload.entityId());
+
+        });
 
 	}
 }

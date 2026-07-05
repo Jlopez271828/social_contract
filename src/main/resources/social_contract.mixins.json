@@ -6,7 +6,11 @@
 		"LightingAccessor",
         "VillagerMixin",
         "VillagerBoundRandomStrollMixin",
-        "BedBlockMixin"
+        "BedBlockMixin",
+        "MerchantMenuMixin",
+        "MerchantContainerMixin",
+        "ScreenAccessor",
+        "MerchantMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

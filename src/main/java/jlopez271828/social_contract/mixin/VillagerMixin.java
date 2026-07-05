@@ -1,36 +1,27 @@
 package jlopez271828.social_contract.mixin;
 
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import jlopez271828.social_contract.old.PathfinderMobMixin;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.SensorType;
-import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.lighting.LightEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-import jlopez271828.social_contract.CustomSensorTypes;
+import jlopez271828.social_contract.types.CustomSensorTypes;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
 
 @Mixin(Villager.class)
-public abstract class VillagerMixin  {
+public abstract class VillagerMixin {
 
 //    @Unique
 //    UUID playerToFollow = null;
@@ -75,7 +66,6 @@ public abstract class VillagerMixin  {
 //        }
 
     }
-
 
 
 

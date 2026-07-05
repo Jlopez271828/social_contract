@@ -1,7 +1,6 @@
-package jlopez271828.social_contract;
+package jlopez271828.social_contract.types;
 
 import com.mojang.serialization.Codec;
-import com.sun.jna.Memory;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -10,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public abstract class CustomMemoryModuleType {
 
