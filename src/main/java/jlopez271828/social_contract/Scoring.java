@@ -28,7 +28,7 @@ public abstract class Scoring {
 
 
 
-        LightEngine<?, ?> lightEngine = ((LightingAccessor) level.getLightEngine()).social_contract2$getBlockEngine();
+        LightEngine<?, ?> lightEngine = ((LightingAccessor) level.getLightEngine()).social_contract$getBlockEngine();
         if(lightEngine == null){
             logger.error("Could not get lightEngine");
             return 0;

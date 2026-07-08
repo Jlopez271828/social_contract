@@ -1,6 +1,8 @@
 package jlopez271828.social_contract.mixin;
 
+import jlopez271828.social_contract.types.AttachmentTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -25,10 +27,11 @@ abstract class BedBlockMixin {
     private void onBedPlacedMixin(Level level, BlockPos pos, BlockState state, LivingEntity by, ItemStack itemStack, CallbackInfo ci){
 
         logger.info("bed placed at {} by {}", pos, by);
-//        BlockEntity entity = level.getBlockEntity(pos);
-//        if (entity != null && !level.isClientSide()){
-//            entity.setAttached();
-//        }
+        BlockEntity entity = level.getBlockEntity(pos);
+        if (entity != null && !level.isClientSide() && by instanceof ServerPlayer sp){
+            logger.info("saved the placer of this block into the blockentity");
+            entity.setAttached(AttachmentTypes.BED_OWNER_ATTACHMENT, sp.getUUID());
+        }
 
     }
 

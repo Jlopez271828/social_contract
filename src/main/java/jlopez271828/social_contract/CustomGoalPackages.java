@@ -11,7 +11,8 @@ public class CustomGoalPackages {
     public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> getFollowPackage(){
 
         return ImmutableList.of(
-                Pair.of(0, FollowFriendGoal.create(0.5f))
+
+                Pair.of(2, FollowFriendGoal.create(0.5f, 2, 4, 25, 1200))
         );
 
     }

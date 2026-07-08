@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface LightingAccessor {
 
     @Accessor("blockEngine")
-    LightEngine<?, ?> social_contract2$getBlockEngine();
+    LightEngine<?, ?> social_contract$getBlockEngine();
 
 
 }

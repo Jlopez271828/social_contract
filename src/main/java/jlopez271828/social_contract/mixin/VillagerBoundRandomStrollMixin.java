@@ -3,15 +3,11 @@ package jlopez271828.social_contract.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.behavior.VillageBoundRandomStroll;
 import net.minecraft.world.entity.ai.util.GoalUtils;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.ai.util.RandomPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.lighting.LightEngine;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
@@ -30,7 +26,7 @@ abstract class VillagerBoundRandomStrollMixin {
                     target = "Lnet/minecraft/world/entity/ai/util/LandRandomPos;getPos(Lnet/minecraft/world/entity/PathfinderMob;II)Lnet/minecraft/world/phys/Vec3;"))
     private static Vec3 getLandPos(PathfinderMob mob, int horizontalDist, int verticalDist, Operation<Vec3> original){
 
-        LightEngine<?, ?> blockEngine =  ((LightingAccessor) mob.level().getLightEngine()).social_contract2$getBlockEngine();
+        LightEngine<?, ?> blockEngine =  ((LightingAccessor) mob.level().getLightEngine()).social_contract$getBlockEngine();
 
         Logger logger = LoggerFactory.getLogger("social_contract");
 

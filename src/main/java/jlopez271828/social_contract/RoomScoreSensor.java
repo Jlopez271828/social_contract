@@ -25,7 +25,8 @@ public class RoomScoreSensor extends Sensor<LivingEntity> {
 
     @Override
     public Set<MemoryModuleType<?>> requires(){
-        return ImmutableSet.of(MemoryModuleType.HOME, CustomMemoryModuleType.HOME_SCORE);
+
+        return ImmutableSet.of(MemoryModuleType.HOME, CustomMemoryModuleType.HOME_SCORE, CustomMemoryModuleType.PLAYER_TO_FOLLOW);
     }
 
     @Override
@@ -53,6 +54,7 @@ public class RoomScoreSensor extends Sensor<LivingEntity> {
                     if (blockEntity != null) { // I don't like it but this seems like the best place to set the UUID in the bed.
                         logger.info("saving this villagers UUID into bed at {}", memory.pos());
                         blockEntity.setAttached(AttachmentTypes.BED_OWNER_ATTACHMENT, entity.getUUID());
+
                     }
                 }
 
@@ -73,6 +75,8 @@ public class RoomScoreSensor extends Sensor<LivingEntity> {
             }else{
                 level.broadcastEntityEvent(entity, (byte)13);
             }
+
+
 
             logger.info("timer before reset is {}", Integer.toString(timer));
             timer = COOLDOWN + random.nextInt(20, 120);

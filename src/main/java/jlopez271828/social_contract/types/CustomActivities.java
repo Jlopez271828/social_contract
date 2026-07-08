@@ -11,4 +11,8 @@ public class CustomActivities {
     private static Activity register(final String name) {
         return Registry.register(BuiltInRegistries.ACTIVITY, name, new Activity(name));
     }
+
+    public static void initialize(){
+
+    }
 }

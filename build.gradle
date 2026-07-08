@@ -82,6 +82,6 @@ publishing {
 
 //loom {
 //
-//    accessWidenerPath = file("src/main/resources/social_contract2.classtweaker");
+//    accessWidenerPath = file("src/main/resources/social_contract.classtweaker");
 //
 //}
