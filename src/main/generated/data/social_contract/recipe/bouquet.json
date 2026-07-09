@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#minecraft:flowers",
+    "#minecraft:flowers",
+    "#minecraft:flowers",
+    "#minecraft:flowers",
+    "#minecraft:flowers",
+    "#minecraft:flowers"
+  ],
+  "result": {
+    "id": "social_contract:bouquet"
+  }
+}

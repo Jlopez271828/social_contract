@@ -19,7 +19,7 @@
 			"jlopez271828.social_contract.Social_contract"
 		],
 		"fabric-datagen": [
-			"jlopez271828.social_contract.Social_contractDataGenerator"
+          "jlopez271828.social_contract.datagen.Social_contractDataGenerator"
 		]
 	},
 	"mixins": [

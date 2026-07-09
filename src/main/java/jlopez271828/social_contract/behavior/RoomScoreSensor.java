@@ -1,6 +1,7 @@
-package jlopez271828.social_contract;
+package jlopez271828.social_contract.behavior;
 
 import com.google.common.collect.ImmutableSet;
+import jlopez271828.social_contract.Scoring;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomMemoryModuleType;
 import net.minecraft.core.GlobalPos;

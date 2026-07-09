@@ -1,8 +1,7 @@
-package jlopez271828.social_contract;
+package jlopez271828.social_contract.behavior;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.npc.villager.Villager;
 

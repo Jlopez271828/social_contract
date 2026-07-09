@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_tagminecraft:flowers": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#minecraft:flowers"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "social_contract:bouquet"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_tagminecraft:flowers"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "social_contract:bouquet"
+    ]
+  }
+}

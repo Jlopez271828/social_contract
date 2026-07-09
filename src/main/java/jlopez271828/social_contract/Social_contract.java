@@ -42,6 +42,7 @@ public class Social_contract implements ModInitializer {
         ExtraVillagerScreenWidgets.initialize();
         CustomReputationEventTypes.initialize();
         CustomActivities.initialize();
+        CustomItems.initialize();
 
         PayloadTypeRegistry.serverboundPlay().register(ServerBoundFollowRequestPayload.TYPE, ServerBoundFollowRequestPayload.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ClientBoundMerchantInfoPayload.TYPE, ClientBoundMerchantInfoPayload.CODEC);

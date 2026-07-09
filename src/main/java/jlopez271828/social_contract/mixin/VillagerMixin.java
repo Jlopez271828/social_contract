@@ -2,7 +2,7 @@ package jlopez271828.social_contract.mixin;
 
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import jlopez271828.social_contract.CustomGoalPackages;
+import jlopez271828.social_contract.behavior.CustomGoalPackages;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomActivities;
 import jlopez271828.social_contract.types.CustomReputationEventTypes;
