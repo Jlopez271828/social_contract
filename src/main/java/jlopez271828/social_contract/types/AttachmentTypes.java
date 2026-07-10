@@ -21,4 +21,5 @@ public class AttachmentTypes {
     });
     public static final AttachmentType<Integer> EXTRA_VILLAGER_MENU_DATA_ATTACHMENT = AttachmentRegistry.create(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "extra_villager_menu_data"));
 
+
 }

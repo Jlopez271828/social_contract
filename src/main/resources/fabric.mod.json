@@ -3,13 +3,13 @@
 	"id": "social_contract",
 	"version": "${version}",
 	"name": "social_contract",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A Villager overhaul mod for Fabric",
 	"authors": [
 		"Jlopez271828"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "copingSeethingMalding.com",
+		"sources": "https://github.com/Jlopez271828/social_contract"
 	},
 	"license": "LGPL-3.0",
 	"icon": "assets/social_contract/icon.png",

@@ -80,8 +80,8 @@ publishing {
 	}
 }
 
-//loom {
-//
-//    accessWidenerPath = file("src/main/resources/social_contract.classtweaker");
-//
-//}
+loom {
+    runConfigs.configureEach {
+        ideConfigGenerated(true)
+    }
+}

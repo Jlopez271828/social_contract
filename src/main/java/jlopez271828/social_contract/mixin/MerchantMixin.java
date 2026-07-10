@@ -66,7 +66,7 @@ public interface MerchantMixin {
     default void sendMerchantInfo(Player player, Component title, int level, CallbackInfo ci, @Local(name = "containerId") OptionalInt containerId){
         if(this instanceof LivingEntity entity && player instanceof ServerPlayer serverPlayer){
             Social_contract.LOGGER.info("SENDMERCHANTINFO: this is a living entity");
-            ServerPlayNetworking.send(serverPlayer, new ClientBoundMerchantInfoPayload(entity.getId(), containerId.getAsInt()));
+//            ServerPlayNetworking.send(serverPlayer, new ClientBoundMerchantInfoPayload(entity.getId(), containerId.getAsInt()));
         }
     }
 

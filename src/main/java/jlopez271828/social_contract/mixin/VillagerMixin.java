@@ -3,10 +3,13 @@ package jlopez271828.social_contract.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import jlopez271828.social_contract.behavior.CustomGoalPackages;
+import jlopez271828.social_contract.networking.ClientBoundMerchantInfoPayload;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomActivities;
 import jlopez271828.social_contract.types.CustomReputationEventTypes;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.ActivityData;
@@ -18,6 +21,7 @@ import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +105,16 @@ public abstract class VillagerMixin extends AbstractVillager  {
 
     }
 
+    @Inject(method = "startTrading",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/npc/villager/Villager;openTradingScreen(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/network/chat/Component;I)V")
+    )
+    private void sendExtraPacket(Player player, CallbackInfo ci){
+
+        if(player instanceof ServerPlayer sp) {
+            ServerPlayNetworking.send(sp, new ClientBoundMerchantInfoPayload(this.getId(), 0));
+        }
+    }
 
 
 }

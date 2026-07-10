@@ -1,0 +1,30 @@
+{
+  "values": [
+    {
+      "id": "#minecraft:villager_picks_up",
+      "required": false
+    },
+    {
+      "id": "#minecraft:bookshelf_books",
+      "required": false
+    },
+    {
+      "id": "#minecraft:flowers",
+      "required": false
+    },
+    "social_contract:bouquet",
+    "minecraft:apple",
+    "minecraft:honey_bottle",
+    "minecraft:honeycomb",
+    "minecraft:cookie",
+    "minecraft:cake",
+    "minecraft:sugar",
+    "minecraft:cooked_beef",
+    "minecraft:cooked_chicken",
+    "minecraft:cooked_cod",
+    "minecraft:cooked_mutton",
+    "minecraft:cooked_rabbit",
+    "minecraft:cooked_porkchop",
+    "minecraft:cooked_salmon"
+  ]
+}

@@ -6,12 +6,15 @@ import jlopez271828.social_contract.MerchantMenuExtra;
 import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.VillagerGiftSlot;
 import jlopez271828.social_contract.networking.ServerBoundFollowRequestPayload;
+import jlopez271828.social_contract.types.AttachmentTypes;
+import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.ClientSideMerchant;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.trading.Merchant;
 import org.slf4j.Logger;
@@ -29,7 +32,7 @@ import java.util.UUID;
 @Mixin(MerchantMenu.class)
 public abstract class MerchantMenuMixin extends AbstractContainerMenu implements MerchantMenuExtra {
 
-    private static Logger logger = LoggerFactory.getLogger(Social_contract.MOD_ID);
+    private static Logger logger = Social_contract.LOGGER;
 
     @Shadow @Final private MerchantContainer tradeContainer;
 
@@ -55,33 +58,54 @@ public abstract class MerchantMenuMixin extends AbstractContainerMenu implements
     )
     protected void injectSlots(int containerId, Inventory inventory, Merchant merchant, CallbackInfo ci){
 
-//        if(merchant instanceof Villager){
-//            logger.info("this merchant is a villager");
-//
-//        }else{
-//            logger.info("this merchant is not a villager");
-//        }
 
         //this constructor should run twice, once for the server and once for the client, the only difference between the two being
         // that the merchant on the client side is a ClientSideMerchant whereas the merchant on the Server side is the actual entity,
         // be it Villager or Wondering trader, and a ClientSideMerchant is not a LivingEntity
-        if(merchant instanceof LivingEntity entity){
-            logger.info("this code is running on the server");
-            int id = entity.getId();
+//        if(merchant instanceof LivingEntity entity){
+//            logger.info("this code is running on the server");
+//            int id = entity.getId();
+//
+//        }
 
+//        this.addSlot(new VillagerGiftSlot(this.tradeContainer, 3, 220, 64));
+
+        //We are on the client and talking about a villager
+        if(merchant instanceof Villager villager){
+            this.addSlot(new VillagerGiftSlot(this.tradeContainer, 3, 220, 64));
+            logger.info("SERVER: the entity this menu belongs to is a villager");
         }
-
-        this.addSlot(new VillagerGiftSlot(this.tradeContainer, 3, 220, 64));
-
-
+        else if(inventory.player.isLocalPlayer() && inventory.player.hasAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT)){ // if we
+            //we know that this is a client player and that we are trading with a villager
+            logger.info("CLIENT: the entity this menu belongs to is a villager");
+            this.addSlot(new VillagerGiftSlot(this.tradeContainer, 3, 220, 64));
+        }else{
+            logger.info("the entity this menu belongs to is not a villager");
+        }
 
     }
 
-//    @WrapMethod(method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/item/trading/Merchant;)V")
-//    protected void ConstructorMixin(int containerId, Inventory inventory, Merchant merchant, Operation<Void> original){
-//
-//
-//    }
+    @Inject(method = "removed", at = @At("HEAD"))
+    private void handleClose(Player player, CallbackInfo ci){
+
+        //we need to clear the extra villager attachments
+        if(player.isLocalPlayer() ){
+
+            if(player.hasAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT) ){
+//                logger.info("CLIENT: this player has an extra villager attachment, removing");
+                player.removeAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT);
+            }
+//            else{
+//                logger.info("CLIENT: this player does not have an extra villager attachment");
+//            }
+        }
+//        else{
+//            logger.info("THIS IS A SERVER PLAYER");
+//        }
+
+    }
+
+
 
 
 

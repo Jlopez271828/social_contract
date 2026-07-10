@@ -40,7 +40,7 @@ public class Social_contractRecipeProvider extends FabricRecipeProvider {
                     builder.requires(ItemTags.FLOWERS);
                 }
 
-                builder.unlockedBy("has_tag" + ItemTags.FLOWERS.location(), has(ItemTags.FLOWERS));
+                builder.unlockedBy("has_tag_" + ItemTags.FLOWERS.location(), has(ItemTags.FLOWERS));
 
                 builder.save(this.output);
 

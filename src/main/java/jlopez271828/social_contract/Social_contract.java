@@ -3,18 +3,25 @@ package jlopez271828.social_contract;
 import com.mojang.datafixers.optics.Wander;
 import jlopez271828.social_contract.networking.ClientBoundMerchantInfoPayload;
 import jlopez271828.social_contract.networking.ServerBoundFollowRequestPayload;
+import jlopez271828.social_contract.networking.ServerBoundGiveGiftPayload;
 import jlopez271828.social_contract.types.*;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MerchantContainer;
+import net.minecraft.world.inventory.MerchantMenu;
+import net.minecraft.world.inventory.Slot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +53,7 @@ public class Social_contract implements ModInitializer {
 
         PayloadTypeRegistry.serverboundPlay().register(ServerBoundFollowRequestPayload.TYPE, ServerBoundFollowRequestPayload.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ClientBoundMerchantInfoPayload.TYPE, ClientBoundMerchantInfoPayload.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(ServerBoundGiveGiftPayload.TYPE, ServerBoundGiveGiftPayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(ServerBoundFollowRequestPayload.TYPE,
                 (payload, context) -> {
@@ -54,7 +62,15 @@ public class Social_contract implements ModInitializer {
 
             Player player = context.player();
 
-            Entity entity = player.level().getEntity(payload.entityId());
+            int entityId = payload.entityId();
+
+            //error state
+            if(entityId < 0){
+                LOGGER.warn("recieved error code from server bound packet");
+                return;
+            }
+
+            Entity entity = player.level().getEntity(entityId);
 
             if(entity instanceof Villager villager){
                 LOGGER.info("found requested villager entity");
@@ -94,6 +110,41 @@ public class Social_contract implements ModInitializer {
             player.setAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT, payload.entityId());
 
         });
+
+        ServerPlayNetworking.registerGlobalReceiver(ServerBoundGiveGiftPayload.TYPE,
+                (payload, context) -> {
+
+                    Player player = context.player();
+                    Entity entity = player.level().getEntity(payload.entityId());
+                    AbstractContainerMenu playerMenu = player.containerMenu;
+                    ServerLevel serverLevel = context.player().level();
+
+                    if(playerMenu.containerId != payload.containerId()){
+                        LOGGER.warn("attested containerId and found containerId do not match");
+                        return;
+                    }
+
+                    if(entity instanceof Villager villager && playerMenu instanceof MerchantMenu menu && menu.slots.size() >= 40){
+                        Slot slot = menu.getSlot(39);
+                        if(slot instanceof VillagerGiftSlot giftSlot){
+                            int amount = giftSlot.acceptGift(villager);
+                            villager.getGossips().add(player.getUUID(), GossipType.MINOR_POSITIVE, amount);
+
+                            if(amount > 0){
+                                villager.playSound(SoundEvents.VILLAGER_CELEBRATE);
+                            }
+                            else{
+                                villager.playSound(SoundEvents.VILLAGER_NO);
+                            }
+                            return;
+                        }
+
+                    }else{
+                        LOGGER.warn("something went wrong, entity: {}, playerMenu: {}, slot size: {}", entity, playerMenu, playerMenu.slots.size());
+                    }
+
+                }
+        );
 
 	}
 }

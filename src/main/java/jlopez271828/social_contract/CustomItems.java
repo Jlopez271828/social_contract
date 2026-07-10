@@ -15,7 +15,7 @@ public class CustomItems {
 
     public static final Item BOUQUET = register("bouquet", Item::new, new Item.Properties());
 
-    public static final Item FORTESTING = register("fortesting", Item::new, new Item.Properties());
+//    public static final Item FORTESTING = register("fortesting", Item::new, new Item.Properties());
 
     public static <T extends Item> T register(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings){
 

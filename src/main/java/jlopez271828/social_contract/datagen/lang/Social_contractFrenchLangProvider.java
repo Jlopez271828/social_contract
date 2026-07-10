@@ -1,4 +1,4 @@
-package jlopez271828.social_contract.datagen;
+package jlopez271828.social_contract.datagen.lang;
 
 import jlopez271828.social_contract.CustomItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
@@ -7,12 +7,10 @@ import net.minecraft.core.HolderLookup;
 
 import java.util.concurrent.CompletableFuture;
 
-public class Social_contractEnglishLangProvider extends FabricLanguageProvider {
+public class Social_contractFrenchLangProvider extends FabricLanguageProvider {
 
-
-    protected Social_contractEnglishLangProvider(FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
-        // Specifying en_us is optional, as it's the default language code
-        super(dataOutput, "en_us", registryLookup);
+    public Social_contractFrenchLangProvider(FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup){
+        super(dataOutput,  "fr_fr", registryLookup);
     }
 
     @Override
