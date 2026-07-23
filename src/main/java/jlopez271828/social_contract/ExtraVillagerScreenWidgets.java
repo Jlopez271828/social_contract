@@ -47,14 +47,6 @@ public class ExtraVillagerScreenWidgets {
 
 
                         drawContext.blit(RenderPipelines.GUI_TEXTURED, SINGLE_SLOT, xo + GIFT_SLOT_X, yo + GIFT_SLOT_Y, 0.0f, 0.0f, 18, 18, 64, 64);
-//                        ((ScreenAccessor) screen).social_contract$addRenderableWidget(new VillagerFollowButton(xo + FOLLOW_BUTTON_X, yo + FOLLOW_BUTTON_Y, button -> {
-//                            logger.info("the follow button has been pushed");
-//
-//                            Integer entityId = client.player.getAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT);
-//                            if(entityId != null) {
-//                                ClientPlayNetworking.send(new ServerBoundFollowRequestPayload(entityId));
-//                            }
-//                        }));
 
                         ((ScreenAccessor) screen).social_contract$addRenderableWidget(
                                 Button

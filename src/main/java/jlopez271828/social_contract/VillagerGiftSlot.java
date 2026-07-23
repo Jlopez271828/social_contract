@@ -1,11 +1,15 @@
 package jlopez271828.social_contract;
 
+import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomItemTags;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.inventory.MerchantContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.slf4j.Logger;
 
 public class VillagerGiftSlot extends Slot {
@@ -42,21 +46,35 @@ public class VillagerGiftSlot extends Slot {
         super.setByPlayer(itemStack);
     }
 
-    public int acceptGift(Villager villager){
+    public boolean acceptGift(Villager villager){
         ItemStack gift = container.getItem(3);
         //can take the gift
         if(gift.is(CustomItemTags.VILLAGER_GIFTABLE)){
+
+            if(gift.is(Items.ENCHANTED_BOOK)) {
+                villager.setAttached(AttachmentTypes.LAST_GIFTED_BOOK, gift);
+            }
 
             int amount = gift.count();
             Item base = gift.getItem();
             gift.shrink(amount);
 
-            return amount;
+            Happiness.increaseHappiness(amount, villager);
+
+            if(amount > 0){
+                villager.playSound(SoundEvents.VILLAGER_CELEBRATE);
+            }else{
+                villager.playSound(SoundEvents.VILLAGER_NO);
+            }
+
+            return true;
 
         }
 
         //could not take the gift
-        return 0;
+
+        villager.playSound(SoundEvents.VILLAGER_NO);
+        return false;
 
     }
 

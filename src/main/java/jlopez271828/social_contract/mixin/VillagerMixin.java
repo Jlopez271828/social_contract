@@ -2,6 +2,8 @@ package jlopez271828.social_contract.mixin;
 
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
+import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.behavior.CustomGoalPackages;
 import jlopez271828.social_contract.networking.ClientBoundMerchantInfoPayload;
 import jlopez271828.social_contract.types.AttachmentTypes;
@@ -9,7 +11,9 @@ import jlopez271828.social_contract.types.CustomActivities;
 import jlopez271828.social_contract.types.CustomReputationEventTypes;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.ActivityData;
@@ -21,8 +25,11 @@ import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Final;
@@ -43,16 +50,21 @@ import java.util.List;
 @Mixin(Villager.class)
 public abstract class VillagerMixin extends AbstractVillager  {
 
+    private static final Logger logger = Social_contract.LOGGER;
+
     VillagerMixin(final EntityType<? extends Villager> type, final Level level){
         super(type, level);
     }
 
     @Shadow
-    public abstract Brain<?> getBrain();
+    public abstract @NonNull Brain<?> getBrain();
 
     @Shadow
     @Final
     private GossipContainer gossips;
+
+
+
 
     @ModifyArgs(method = "<clinit>",
             at = @At(value = "INVOKE",
@@ -70,7 +82,7 @@ public abstract class VillagerMixin extends AbstractVillager  {
     @ModifyReturnValue(method = "lambda$static$0",
             at = @At("RETURN")
     )
-    private static List registerCustomActivity(List original){
+    private static List<ActivityData<?>> registerCustomActivity(List<ActivityData<?>> original){
         original.add(ActivityData.create(CustomActivities.FOLLOW_FRIEND, CustomGoalPackages.getFollowPackage()));
 
         return original;
@@ -115,6 +127,46 @@ public abstract class VillagerMixin extends AbstractVillager  {
             ServerPlayNetworking.send(sp, new ClientBoundMerchantInfoPayload(this.getId(), 0));
         }
     }
+
+    //this runs each time a villager levels up
+    @Inject(method = "updateTrades", at = @At("TAIL"))
+    private void addCustomTrades(ServerLevel level, CallbackInfo ci, @Local(name = "data") VillagerData data){
+        MerchantOffers offers = this.getOffers();
+//        offers.add(new MerchantOffer(new ItemCost(Items.DIRT), new ItemStack(Items.EMERALD, 64), 99, 1, 1));
+        int profession_level = data.level();
+        if(profession_level >= 4){
+
+            //if we couldn't use the last traded book (or if there is no last traded book)
+            if(!Social_contract.trySetSavedBookTrade(offers, (Villager) (Object) this)){
+
+                if(profession_level == 4){
+                    Social_contract.setRandomEnchantedBookTrade(offers, (Villager) (Object) this, EnchantmentTags.NON_TREASURE, level);
+
+                }else if(profession_level == 5){
+                    Social_contract.setRandomEnchantedBookTrade(offers, (Villager) (Object) this, EnchantmentTags.TREASURE, level);
+                }
+
+            }
+
+
+        }
+
+
+    }
+
+    @ModifyReturnValue(method = "shouldIncreaseLevel", at = @At("RETURN"))
+    private boolean constrainUpdate(boolean original, @Local(name = "currentLevel") int currentLevel){
+
+        Integer happiness = this.getAttached(AttachmentTypes.VILLAGER_HAPPINESS);
+        if(happiness == null){
+            logger.warn("could not find villager happiness");
+            return false;
+        }
+
+        return original && happiness >= Social_contract.MIN_HAPPINESS_LEVELS[currentLevel];
+    }
+
+
 
 
 }

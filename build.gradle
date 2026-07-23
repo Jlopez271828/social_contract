@@ -84,4 +84,6 @@ loom {
     runConfigs.configureEach {
         ideConfigGenerated(true)
     }
+
+    accessWidenerPath = file("src/main/resources/social_contract.classtweaker")
 }

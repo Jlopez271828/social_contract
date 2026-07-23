@@ -2,6 +2,7 @@ package jlopez271828.social_contract;
 
 import com.mojang.datafixers.optics.Wander;
 import jlopez271828.social_contract.networking.ClientBoundMerchantInfoPayload;
+import jlopez271828.social_contract.networking.PacketHandlers;
 import jlopez271828.social_contract.networking.ServerBoundFollowRequestPayload;
 import jlopez271828.social_contract.networking.ServerBoundGiveGiftPayload;
 import jlopez271828.social_contract.types.*;
@@ -10,8 +11,16 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.EnchantmentTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.gossip.GossipType;
@@ -22,8 +31,20 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MerchantContainer;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.trading.ItemCost;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Social_contract implements ModInitializer {
 	public static final String MOD_ID = "social_contract";
@@ -33,6 +54,18 @@ public class Social_contract implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final int MIN_FOLLOW_REPUTATION = 10;
+    public static final int MIN_FOLLOW_HAPPINESS = 10;
+
+    //Minimum happiness values for a villager to level up
+    public static final int MIN_HAPPINESS_LEVEL_2 = 20;
+    public static final int MIN_HAPPINESS_LEVEL_3 = 50;
+    public static final int MIN_HAPPINESS_LEVEL_4 = 90;
+    public static final int MIN_HAPPINESS_LEVEL_5 = 150;
+
+    public static final int[] MIN_HAPPINESS_LEVELS = {0, 20, 50, 90, 150};
+
+    //Happiness values for various events
+    public static final int HAPPINESS_FOR_BED = 5;
 
 
 	@Override
@@ -50,101 +83,54 @@ public class Social_contract implements ModInitializer {
         CustomReputationEventTypes.initialize();
         CustomActivities.initialize();
         CustomItems.initialize();
+        PacketHandlers.initialize();
 
-        PayloadTypeRegistry.serverboundPlay().register(ServerBoundFollowRequestPayload.TYPE, ServerBoundFollowRequestPayload.CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(ClientBoundMerchantInfoPayload.TYPE, ClientBoundMerchantInfoPayload.CODEC);
-        PayloadTypeRegistry.serverboundPlay().register(ServerBoundGiveGiftPayload.TYPE, ServerBoundGiveGiftPayload.CODEC);
 
-        ServerPlayNetworking.registerGlobalReceiver(ServerBoundFollowRequestPayload.TYPE,
-                (payload, context) -> {
-
-            LOGGER.info("received entityId: {} from a server bound packet", payload.entityId());
-
-            Player player = context.player();
-
-            int entityId = payload.entityId();
-
-            //error state
-            if(entityId < 0){
-                LOGGER.warn("recieved error code from server bound packet");
-                return;
-            }
-
-            Entity entity = player.level().getEntity(entityId);
-
-            if(entity instanceof Villager villager){
-                LOGGER.info("found requested villager entity");
-                int reputation = villager.getPlayerReputation(player);
-                LOGGER.info("reputation: {}", reputation);
-                if(reputation >= MIN_FOLLOW_REPUTATION){
-                    LOGGER.info("this player meets the requirements");
-                    villager.playSound(SoundEvents.VILLAGER_CELEBRATE);
-                    Brain<?> brain = villager.getBrain();
-                    brain.setMemory(CustomMemoryModuleType.PLAYER_TO_FOLLOW, player);
-                    brain.setActiveActivityIfPossible(CustomActivities.FOLLOW_FRIEND);
-                    if(brain.isActive(CustomActivities.FOLLOW_FRIEND)){
-                        LOGGER.info("succeeded in setting activity");
-                    }else{
-                        LOGGER.info("failed in setting activity");
-                    }
-                    //The reason the above function is 'IfPossible' is for two possible cases:
-                    // 1. the activity is simply never registered
-                    // 2. an activity has start conditions (memories that need to be present)
-                }else{
-                    LOGGER.info("this player does not meet the requirements");
-                    entity.playSound(SoundEvents.VILLAGER_NO);
-                }
-
-            }else if(entity instanceof WanderingTrader){
-                entity.playSound(SoundEvents.VILLAGER_NO);
-            }
-
-        });
-
-        ClientPlayNetworking.registerGlobalReceiver(ClientBoundMerchantInfoPayload.TYPE, (payload, context) -> {
-
-            LOGGER.info("received entityId: {} and containerId: {} from a client bound packet", payload.entityId(), payload.containerId());
-
-            Player player = context.player();
-
-            player.setAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT, payload.entityId());
-
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(ServerBoundGiveGiftPayload.TYPE,
-                (payload, context) -> {
-
-                    Player player = context.player();
-                    Entity entity = player.level().getEntity(payload.entityId());
-                    AbstractContainerMenu playerMenu = player.containerMenu;
-                    ServerLevel serverLevel = context.player().level();
-
-                    if(playerMenu.containerId != payload.containerId()){
-                        LOGGER.warn("attested containerId and found containerId do not match");
-                        return;
-                    }
-
-                    if(entity instanceof Villager villager && playerMenu instanceof MerchantMenu menu && menu.slots.size() >= 40){
-                        Slot slot = menu.getSlot(39);
-                        if(slot instanceof VillagerGiftSlot giftSlot){
-                            int amount = giftSlot.acceptGift(villager);
-                            villager.getGossips().add(player.getUUID(), GossipType.MINOR_POSITIVE, amount);
-
-                            if(amount > 0){
-                                villager.playSound(SoundEvents.VILLAGER_CELEBRATE);
-                            }
-                            else{
-                                villager.playSound(SoundEvents.VILLAGER_NO);
-                            }
-                            return;
-                        }
-
-                    }else{
-                        LOGGER.warn("something went wrong, entity: {}, playerMenu: {}, slot size: {}", entity, playerMenu, playerMenu.slots.size());
-                    }
-
-                }
-        );
 
 	}
+
+
+    public static boolean trySetSavedBookTrade(MerchantOffers offers, Villager villager){
+
+        if(villager.hasAttached(AttachmentTypes.LAST_GIFTED_BOOK)){
+            LOGGER.info("this villager has been given an enchanted book");
+            //TODO: check book for the enchantments it has and do some processing dependant on villager happiness
+            ItemStack gift = villager.getAttached(AttachmentTypes.LAST_GIFTED_BOOK);
+            if(gift != null) {
+                offers.add(new MerchantOffer(new ItemCost(Items.EMERALD), gift, 99, 1, 1));
+                return true;
+            }
+
+        }
+
+        LOGGER.info("this villager has not been given an enchanted book");
+        return false;
+
+    }
+
+    public static void setRandomEnchantedBookTrade(MerchantOffers offers, Villager villager, TagKey<Enchantment> tagKey, ServerLevel level){
+
+
+        LOGGER.info("trying to set random enchanted book trade");
+        Optional<HolderSet.Named<Enchantment>> optionalSet = level.registryAccess().get(tagKey);
+
+        if(optionalSet.isPresent()){
+
+            HolderSet<Enchantment> set = optionalSet.get();
+
+            Holder<Enchantment> holder = set.get(villager.getRandom().nextInt(0, set.size() - 1));
+
+            LOGGER.info("enchantment found is {}", holder.value());
+
+            ItemStack base = new ItemStack(Items.ENCHANTED_BOOK);
+
+            //TODO: make the system for determining the level of a randomly given enchantment
+            base.enchant(holder, 1);
+
+            offers.add(new MerchantOffer(new ItemCost(Items.EMERALD), base, 99, 1, 1));
+
+        }
+
+
+    }
 }

@@ -111,13 +111,17 @@ public abstract class Scoring {
             logger.info("Score after accounting for {} roommates: {}", roommates.size(), resultScore);
         }
 
-
+        //since each roommate must be in the same space, they must have the same score
+        //perhaps this shouldn't be a linear function of the number of roommates
         for (UUID roommateID : roommates){
             logger.info("roommate exists with UUID {}", roommateID);
             Entity entity = level.getEntity(roommateID);
-            if(entity instanceof Villager){
+            if(entity instanceof Villager villager){
 
-                ((Villager) entity).getBrain().setMemory(CustomMemoryModuleType.HOME_SCORE, resultScore);
+                villager.getBrain().setMemory(CustomMemoryModuleType.HOME_SCORE, resultScore);
+
+
+
             }
 
         }

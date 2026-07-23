@@ -10,7 +10,11 @@
         "MerchantMenuMixin",
         "MerchantContainerMixin",
         "ScreenAccessor",
-        "MerchantMixin"
+        "MerchantMixin",
+        "VillagerAccessor",
+        "ValidateNearbyPoiMixin",
+        "AcquirePoiMixin",
+      "MemoryAccessorAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1
