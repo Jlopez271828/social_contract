@@ -95,15 +95,27 @@ public abstract class MerchantMenuMixin extends AbstractContainerMenu implements
 //                logger.info("CLIENT: this player has an extra villager attachment, removing");
                 player.removeAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT);
             }
-//            else{
-//                logger.info("CLIENT: this player does not have an extra villager attachment");
-//            }
+
         }
-//        else{
-//            logger.info("THIS IS A SERVER PLAYER");
-//        }
+
+
+
 
     }
+
+    @Inject(
+            method = "removed",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/player/Inventory;placeItemBackInInventory(Lnet/minecraft/world/item/ItemStack;)V",
+                    ordinal = 0
+            )
+    )
+    private void putGiftBack(Player player, CallbackInfo ci){
+
+        player.getInventory().placeItemBackInInventory(this.tradeContainer.getItem(3));
+    }
+
 
 
 

@@ -1,0 +1,23 @@
+{
+  "values": [
+    "minecraft:bane_of_arthropods",
+    "minecraft:blast_protection",
+    "minecraft:fire_aspect",
+    "minecraft:fire_protection",
+    "minecraft:flame",
+    "minecraft:knockback",
+    "minecraft:looting",
+    "minecraft:luck_of_the_sea",
+    "minecraft:lunge",
+    "minecraft:lure",
+    "minecraft:mending",
+    "minecraft:protection",
+    "minecraft:projectile_protection",
+    "minecraft:punch",
+    "minecraft:quick_charge",
+    "minecraft:silk_touch",
+    "minecraft:sweeping_edge",
+    "minecraft:thorns",
+    "minecraft:unbreaking"
+  ]
+}

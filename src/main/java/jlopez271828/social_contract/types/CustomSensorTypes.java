@@ -1,6 +1,6 @@
 package jlopez271828.social_contract.types;
 
-import jlopez271828.social_contract.behavior.RoomScoreSensor;
+
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public class CustomSensorTypes {
 
-    public static final SensorType<RoomScoreSensor> ROOM_SCORE_SENSOR = register("room_score_sensor", RoomScoreSensor::new);
+//    public static final SensorType<RoomScoreSensor> ROOM_SCORE_SENSOR = register("room_score_sensor", RoomScoreSensor::new);
     private static final Logger logger = LoggerFactory.getLogger("social_contract");
 
     private static <U extends Sensor<?>> SensorType<U> register(final String name, final Supplier<U> factory) {

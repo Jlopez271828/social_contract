@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_tagminecraft:flowers": {
+    "has_tag_minecraft:flowers": {
       "conditions": {
         "items": [
           {
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_tagminecraft:flowers"
+      "has_tag_minecraft:flowers"
     ]
   ],
   "rewards": {

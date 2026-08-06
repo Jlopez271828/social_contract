@@ -26,6 +26,7 @@ public class Social_contractItemTagProvider extends FabricTagsProvider.ItemTagsP
         valueLookupBuilder(VILLAGER_GIFTABLE)
                 .addOptionalTag(ItemTags.VILLAGER_PICKS_UP)
                 .addOptionalTag(ItemTags.BOOKSHELF_BOOKS)
+                .add(Items.WRITTEN_BOOK)
                 .addOptionalTag(ItemTags.FLOWERS)
                 .add(CustomItems.BOUQUET)
                 .add(Items.APPLE)

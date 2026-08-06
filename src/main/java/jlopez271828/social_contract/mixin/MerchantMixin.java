@@ -1,29 +1,19 @@
 package jlopez271828.social_contract.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.sugar.Local;
 import jlopez271828.social_contract.Social_contract;
-import jlopez271828.social_contract.networking.ClientBoundMerchantInfoPayload;
-import jlopez271828.social_contract.old.VillagerMenu;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffers;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.OptionalInt;
 
 @Mixin(Merchant.class)
 public interface MerchantMixin {
@@ -58,16 +48,47 @@ public interface MerchantMixin {
 //        }
 //    }
 
-    @Inject(method = "openTradingScreen",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/world/item/trading/Merchant;getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;"
-            )
+//    @Inject(method = "openTradingScreen",
+//            at = @At(
+//                    value = "INVOKE",
+//                    target = "Lnet/minecraft/world/entity/player/Player;sendMerchantOffers(ILnet/minecraft/world/item/trading/MerchantOffers;IIZZ)V"
+//            )
+//    )
+//    default void constrainOffers(Player player, Component title, int level, CallbackInfo ci, @Local(name = "offers") MerchantOffers offers){
+//
+//        if(this instanceof Villager villager){
+//
+//            offers = Social_contract.constrainOffers(villager, offers);
+//
+//        }
+//
+//    }
+
+    @ModifyArg(
+            method = "openTradingScreen",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/player/Player;sendMerchantOffers(ILnet/minecraft/world/item/trading/MerchantOffers;IIZZ)V"
+            ),
+            index = 1
     )
-    default void sendMerchantInfo(Player player, Component title, int level, CallbackInfo ci, @Local(name = "containerId") OptionalInt containerId){
-        if(this instanceof LivingEntity entity && player instanceof ServerPlayer serverPlayer){
-            Social_contract.LOGGER.info("SENDMERCHANTINFO: this is a living entity");
-//            ServerPlayNetworking.send(serverPlayer, new ClientBoundMerchantInfoPayload(entity.getId(), containerId.getAsInt()));
+    default MerchantOffers constrainOffers(MerchantOffers offers){
+
+        if(this instanceof Villager villager){
+
+            Social_contract.LOGGER.info("constraining offers packet");
+            Social_contract.LOGGER.info("offers before constraint: {}", offers);
+            //I wonder If I can make this more efficient
+            // currently it creates a new MerchantOffers with the constraints applied upon the original
+            // However, I wonder if this method count instead return an integer corresponding to how many offers need to
+            // be removed from the tail. Someone should implement this and test it, and make a GitHub issue about it if
+            // it is truly faster & more memory efficient.
+            offers = Social_contract.constrainOffers(villager, offers);
+            Social_contract.LOGGER.info("offers after constraint: {}", offers);
+
         }
+
+        return offers;
     }
 
 

@@ -2,6 +2,7 @@ package jlopez271828.social_contract;
 
 import jlopez271828.social_contract.mixin.ScreenAccessor;
 import jlopez271828.social_contract.networking.ServerBoundFollowRequestPayload;
+import jlopez271828.social_contract.networking.ServerBoundFollowStopPayload;
 import jlopez271828.social_contract.networking.ServerBoundGiveGiftPayload;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -48,6 +49,35 @@ public class ExtraVillagerScreenWidgets {
 
                         drawContext.blit(RenderPipelines.GUI_TEXTURED, SINGLE_SLOT, xo + GIFT_SLOT_X, yo + GIFT_SLOT_Y, 0.0f, 0.0f, 18, 18, 64, 64);
 
+                        //I really hope this even doesn't get ran every frame draw, because I suspect hasAttached will be
+                        // expensive when ran so much, and that we only need to get its value once when the screen initializes.
+                    if(client.player.hasAttached(AttachmentTypes.HAS_VILLAGER_FOLLOWING)){
+                        ((ScreenAccessor) screen).social_contract$addRenderableWidget(
+                                Button.builder(
+                                        Component.empty(),
+                                        button -> {
+
+
+                                            if(client.player != null && client.player.hasAttached(AttachmentTypes.HAS_VILLAGER_FOLLOWING)) {
+                                                Integer entityId = client.player.getAttached(AttachmentTypes.HAS_VILLAGER_FOLLOWING);
+
+                                                if (entityId != null) {
+                                                    ClientPlayNetworking.send(new ServerBoundFollowStopPayload(entityId));
+
+                                                }
+
+                                            }
+
+
+
+                                        })
+                                        .pos(xo + FOLLOW_BUTTON_X, yo + FOLLOW_BUTTON_Y)
+                                        .size(FOLLOW_BUTTON_WIDTH, FOLLOW_BUTTON_HEIGHT)
+                                        .tooltip(Tooltip.create(Component.literal("Stop Following")))
+                                        .build()
+                        );
+
+                    }else {
                         ((ScreenAccessor) screen).social_contract$addRenderableWidget(
                                 Button
                                         .builder(Component.empty(),
@@ -55,7 +85,7 @@ public class ExtraVillagerScreenWidgets {
                                                     logger.info("the follow button has been pushed");
 
                                                     Integer entityId = client.player.getAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT);
-                                                    if(entityId != null) {
+                                                    if (entityId != null) {
                                                         ClientPlayNetworking.send(new ServerBoundFollowRequestPayload(entityId));
                                                     }
                                                 }
@@ -65,6 +95,7 @@ public class ExtraVillagerScreenWidgets {
                                         .tooltip(Tooltip.create(Component.literal("Follow Button")))
                                         .build()
                         );
+                    }
 
                         ((ScreenAccessor) screen).social_contract$addRenderableWidget(
                                 Button

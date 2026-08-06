@@ -1,6 +1,7 @@
 package jlopez271828.social_contract.behavior;
 
 import jlopez271828.social_contract.Social_contract;
+import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomMemoryModuleType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.PathfinderMob;
@@ -27,17 +28,20 @@ public class FollowFriendGoal {
                                                 final int giveUpDistance,
                                                 final int tooLongUnreachableDuration){
 
-        return BehaviorBuilder.create(i -> i.group(i.registered(MemoryModuleType.WALK_TARGET), i.present(CustomMemoryModuleType.PLAYER_TO_FOLLOW), i.registered(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)).apply(i,
-                (walktarget, toFollow, cantReachSince) ->
+        return BehaviorBuilder.create(i -> i.group(i.registered(MemoryModuleType.WALK_TARGET), i.registered(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)).apply(i,
+                (walktarget, cantReachSince) ->
                         (level, body, timestamp) -> {
 
 //            logger.info("starting follow goal");
-            Player player = i.get(toFollow);
+            Player player = body.getAttached(AttachmentTypes.PLAYER_TO_FOLLOW);
+            if(player == null){
+                body.getBrain().setActiveActivityIfPossible(Activity.IDLE);
+                return true;
+            }
             BlockPos pos = player.blockPosition();
-//            logger.info("player at {} villager at {}", player.blockPosition(), body.blockPosition());
             Optional<Long> cantReachTargetSince = i.tryGet(cantReachSince);
             if(player.level().dimension() == level.dimension()
-                    && (!cantReachTargetSince.isPresent() || level.getGameTime() - (Long) cantReachTargetSince.get() <= tooLongUnreachableDuration)){
+                    && (!cantReachTargetSince.isPresent() || level.getGameTime() -  cantReachTargetSince.get() <= tooLongUnreachableDuration)){
 
                 int dist = pos.distManhattan(body.blockPosition());
 
@@ -60,14 +64,9 @@ public class FollowFriendGoal {
                     else{
 
                         logger.info("distance is too large, giving up");
-                        toFollow.erase();
+                        body.removeAttached(AttachmentTypes.PLAYER_TO_FOLLOW);
                         cantReachSince.set(timestamp);
                         body.getBrain().setActiveActivityIfPossible(Activity.IDLE);
-                        if(body.getBrain().isActive(Activity.IDLE)){
-                            logger.info("Successfully set activity back to idle");
-                        }else{
-                            logger.info("failed to set activity back to idle");
-                        }
                         return true;
                     }
 
@@ -79,14 +78,10 @@ public class FollowFriendGoal {
                         towardsTargetPos = DefaultRandomPos.getPosTowards(body, 20, 7, Vec3.atBottomCenterOf(pos), (float) (Math.PI / 4));
                         if (++tries == MAX_TRIES) {
                             logger.info("could not find suitable path after 500 tries");
-                            toFollow.erase();
+                            body.removeAttached(AttachmentTypes.PLAYER_TO_FOLLOW);
                             cantReachSince.set(timestamp);
                             body.getBrain().setActiveActivityIfPossible(Activity.IDLE);
-                            if(body.getBrain().isActive(Activity.IDLE)){
-                                logger.info("Successfully set activity back to idle");
-                            }else{
-                                logger.info("failed to set activity back to idle");
-                            }
+
                             return true;
                         }
                     }
@@ -103,9 +98,9 @@ public class FollowFriendGoal {
 
             }else{//our entity cant reach the player
                 logger.info("first check failed, can't reach player");
-                toFollow.erase();
+                body.removeAttached(AttachmentTypes.PLAYER_TO_FOLLOW);
                 cantReachSince.set(timestamp);
-                body.getBrain().setActiveActivityIfPossible(Activity.CORE);
+                body.getBrain().setActiveActivityIfPossible(Activity.IDLE);
             }
 
 

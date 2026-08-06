@@ -8,6 +8,7 @@
       "id": "#minecraft:bookshelf_books",
       "required": false
     },
+    "minecraft:written_book",
     {
       "id": "#minecraft:flowers",
       "required": false

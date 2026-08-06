@@ -2,37 +2,57 @@ package jlopez271828.social_contract.types;
 
 import com.mojang.serialization.Codec;
 import jlopez271828.social_contract.Social_contract;
+import jlopez271828.social_contract.Happiness;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import org.lwjgl.system.ffm.mapping.Mapping;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class AttachmentTypes {
 
     public static final AttachmentType<UUID> BED_OWNER_ATTACHMENT = AttachmentRegistry.create(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "bed_owner_attachment"),
-            builder -> {
-        builder.persistent(UUIDUtil.CODEC);
-    });
+            builder -> builder.persistent(UUIDUtil.CODEC)
+    );
     public static final AttachmentType<UUID> BED_PACED_BY = AttachmentRegistry.create(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "bed_placed_by"),
-            builder -> {
-        builder.persistent(UUIDUtil.CODEC);
-    });
+            builder -> builder.persistent(UUIDUtil.CODEC)
+    );
     public static final AttachmentType<Integer> EXTRA_VILLAGER_MENU_DATA_ATTACHMENT = AttachmentRegistry.create(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "extra_villager_menu_data"));
 
-    public static final AttachmentType<Boolean> HAS_VILLAGER_FOLLOWING = AttachmentRegistry.create(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "has_villager_following"));
+    public static final AttachmentType<ServerPlayer> PLAYER_TO_FOLLOW = AttachmentRegistry.create(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "player_to_follow"));
+
+    public static final AttachmentType<Integer> HAS_VILLAGER_FOLLOWING = AttachmentRegistry.create(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "has_villager_following"));
 
     public static final AttachmentType<ItemStack> LAST_GIFTED_BOOK = AttachmentRegistry.create(
             Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "last_gifted_book"),
-            builder -> builder.persistent(ItemStack.CODEC));
-
-    public static final AttachmentType<Integer> VILLAGER_HAPPINESS = AttachmentRegistry.create(
-            Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "villager_happiness"),
-            builder -> {
-                builder.persistent(Codec.INT);
-            }
+            builder -> builder.persistent(ItemStack.CODEC)
     );
+
+    public static final AttachmentType<Happiness> VILLAGER_HAPPINESS = AttachmentRegistry.create(
+            Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "villager_happiness"),
+            builder -> builder.persistent(Happiness.CODEC)
+    );
+
+    public static final AttachmentType<Long> LAST_ROOM_SCORE_TIME = AttachmentRegistry.create(
+            Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "last_room_score_time"),
+            builder -> builder.persistent(Codec.LONG)
+    );
+
+    public static final AttachmentType<List<GlobalPos>> ROOM_DOORS = AttachmentRegistry.create(
+            Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "room_doors"),
+            builder -> builder.persistent(GlobalPos.CODEC.listOf())
+    );
+
+
+
+    public static void initialize(){
+
+    }
 }

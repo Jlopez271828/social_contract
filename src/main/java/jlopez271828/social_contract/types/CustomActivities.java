@@ -8,6 +8,8 @@ public class CustomActivities {
 
     public static final Activity FOLLOW_FRIEND = register("follow_friend");
 
+    public static final Activity CLOSE_DOORS = register("close_doors");
+
     private static Activity register(final String name) {
         return Registry.register(BuiltInRegistries.ACTIVITY, name, new Activity(name));
     }
