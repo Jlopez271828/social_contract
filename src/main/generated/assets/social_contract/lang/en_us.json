@@ -1,3 +1,10 @@
 {
-  "item.social_contract.bouquet": "Bouquet"
+  "item.social_contract.bouquet": "Bouquet",
+  "tag.enchantment.social_contract.enchantment_group_a": "Enchantment Group A",
+  "tag.enchantment.social_contract.enchantment_group_b": "Enchantment Group B",
+  "tag.item.social_contract.villager_decoration": "villager decoration",
+  "tag.item.social_contract.villager_giftable": "villager giftable",
+  "text.social_contract.follow_button_start_tooltip": "Request Villager Follow You",
+  "text.social_contract.follow_button_stop_tooltip": "Make Villager Stop Following",
+  "text.social_contract.gift_button_tooltip": "Give This Villager a Gift :)"
 }

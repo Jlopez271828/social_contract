@@ -39,8 +39,6 @@ public class CloseDoorsTask extends Behavior<Villager> {
 
     public boolean checkExtraStartConditions(ServerLevel level, Villager villager){
 
-        logger.info("checking start conditions");
-
         List<GlobalPos> doorList = villager.getAttached(AttachmentTypes.ROOM_DOORS);
 
         //In case the schedule hasn't properly updated
@@ -87,8 +85,6 @@ public class CloseDoorsTask extends Behavior<Villager> {
             villager.stopSleeping();
         }
 
-        logger.info("starting task");
-
         this.currentDoorIndex = 0;
         this.doorList = getOpenedDoors(level, villager.getAttachedOrElse(AttachmentTypes.ROOM_DOORS, List.of()));
         this.targetNextDoor(level, villager);
@@ -97,8 +93,6 @@ public class CloseDoorsTask extends Behavior<Villager> {
 
     public void stop(ServerLevel level, Villager villager, long timestamp){
 
-        logger.info("stopping the task");
-
         villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
         this.currentDoorIndex = 0;
 
@@ -106,8 +100,6 @@ public class CloseDoorsTask extends Behavior<Villager> {
 
     @Override
     protected void tick(ServerLevel level, Villager villager, long gameTime) {
-
-        logger.info("task ticking ");
 
         GlobalPos targetDoorPos = doorList.get(this.currentDoorIndex);
 

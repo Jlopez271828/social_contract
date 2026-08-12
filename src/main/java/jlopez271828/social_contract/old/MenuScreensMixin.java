@@ -1,6 +1,5 @@
 package jlopez271828.social_contract.old;
 
-import jlopez271828.social_contract.types.CustomMenuTypes;
 import net.minecraft.client.gui.screens.MenuScreens;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

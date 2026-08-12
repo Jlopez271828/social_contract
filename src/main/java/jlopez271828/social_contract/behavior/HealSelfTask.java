@@ -5,10 +5,7 @@ import jlopez271828.social_contract.Social_contract;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.behavior.Behavior;
-import net.minecraft.world.entity.ai.behavior.OneShot;
-import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
@@ -16,6 +13,12 @@ import org.slf4j.Logger;
 public class HealSelfTask extends Behavior<Villager> {
 
     private static Logger logger = Social_contract.LOGGER;
+
+    private static int DELAY = 3 * 20;
+    private static int TIME_BETWEEN_EATING = 2 * 20;
+
+    private int delayTimer = 0;
+    private int intervalTimer = 0;
 
     public HealSelfTask(){
         super(ImmutableMap.of());
@@ -36,7 +39,20 @@ public class HealSelfTask extends Behavior<Villager> {
         return this.checkExtraStartConditions(level, villager);
     }
 
+    // TODO: find a way to offset playing the eating soundEffect so that it does not coincide with the hurt sound effect
+
+    protected void start(final ServerLevel level, final Villager villager, final long timestamp){
+
+        delayTimer = DELAY;
+
+    }
+
     protected void tick(final ServerLevel level, final Villager villager, final long timestamp){
+
+        if(delayTimer > 0){
+            delayTimer--;
+            return;
+        }
 
 
 
@@ -44,7 +60,6 @@ public class HealSelfTask extends Behavior<Villager> {
 
         for(int slot = 0; slot < inventory.getContainerSize(); slot++){
             ItemStack itemStack = inventory.getItem(slot);
-            logger.info("item stack: {}", itemStack);
             if(!itemStack.isEmpty()){
                 Integer value = Villager.FOOD_POINTS.get(itemStack.getItem());
                 if(value != null){

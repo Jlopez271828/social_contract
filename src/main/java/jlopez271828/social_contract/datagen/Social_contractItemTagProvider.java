@@ -1,6 +1,7 @@
 package jlopez271828.social_contract.datagen;
 
 import jlopez271828.social_contract.CustomItems;
+import jlopez271828.social_contract.types.CustomItemTags;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
@@ -24,6 +25,7 @@ public class Social_contractItemTagProvider extends FabricTagsProvider.ItemTagsP
 
         //Maybe there should be multiple tags, one for general villager giftable, and more for each profession
         valueLookupBuilder(VILLAGER_GIFTABLE)
+                .addOptionalTag(CustomItemTags.VILLAGER_DECORATION)
                 .addOptionalTag(ItemTags.VILLAGER_PICKS_UP)
                 .addOptionalTag(ItemTags.BOOKSHELF_BOOKS)
                 .add(Items.WRITTEN_BOOK)
@@ -42,5 +44,11 @@ public class Social_contractItemTagProvider extends FabricTagsProvider.ItemTagsP
                 .add(Items.COOKED_RABBIT)
                 .add(Items.COOKED_PORKCHOP)
                 .add(Items.COOKED_SALMON);
+
+        valueLookupBuilder(CustomItemTags.VILLAGER_DECORATION)
+                .add(Items.DECORATED_POT)
+                .add(Items.JUKEBOX)
+                .add(Items.PAINTING)
+                .add(Items.FLOWER_POT);
     }
 }

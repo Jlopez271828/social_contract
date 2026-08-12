@@ -1,19 +1,13 @@
 package jlopez271828.social_contract.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import jlopez271828.social_contract.Social_contract;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.npc.villager.Villager;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffers;
-import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Merchant.class)
 public interface MerchantMixin {

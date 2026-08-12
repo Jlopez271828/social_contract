@@ -1,0 +1,22 @@
+{
+  "parent": "social_contract:root",
+  "criteria": {
+    "altruist": {
+      "trigger": "social_contract:altruist_criterion"
+    }
+  },
+  "display": {
+    "description": "Get A Villager to Max Happiness",
+    "frame": "challenge",
+    "icon": {
+      "id": "minecraft:emerald"
+    },
+    "title": "Altriust"
+  },
+  "requirements": [
+    [
+      "altruist"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

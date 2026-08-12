@@ -2,7 +2,6 @@ package jlopez271828.social_contract;
 
 import jlopez271828.social_contract.mixin.LightingAccessor;
 import jlopez271828.social_contract.types.AttachmentTypes;
-import jlopez271828.social_contract.types.CustomMemoryModuleType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.server.level.ServerLevel;
@@ -60,6 +59,15 @@ public abstract class Scoring {
 
         BlockPos current;
         while(count < Social_contract.MAX_ROOM_SIZE && !queue.isEmpty()){
+
+
+            if(count == 400){
+                logger.info("400 blocks checked");
+            }
+
+            if(count == 480){
+                logger.info("480 blocks checked");
+            }
 
             current = queue.remove();
 

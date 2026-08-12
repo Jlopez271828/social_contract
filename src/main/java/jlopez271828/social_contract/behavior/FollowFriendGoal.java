@@ -2,7 +2,6 @@ package jlopez271828.social_contract.behavior;
 
 import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.types.AttachmentTypes;
-import jlopez271828.social_contract.types.CustomMemoryModuleType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.behavior.OneShot;
@@ -41,29 +40,25 @@ public class FollowFriendGoal {
             BlockPos pos = player.blockPosition();
             Optional<Long> cantReachTargetSince = i.tryGet(cantReachSince);
             if(player.level().dimension() == level.dimension()
-                    && (!cantReachTargetSince.isPresent() || level.getGameTime() -  cantReachTargetSince.get() <= tooLongUnreachableDuration)){
+                    && (!cantReachTargetSince.isPresent() || level.getGameTime() -  cantReachTargetSince.get() <= tooLongUnreachableDuration)
+            ){
 
                 int dist = pos.distManhattan(body.blockPosition());
 
-
+                // TODO: make this execution flow less messy
 
                 if(dist > tooFarDistance){
 
                     if(dist < giveUpDistance){
                         Path path = body.getNavigation().createPath(pos, giveUpDistance);
                         if(path != null){
-                            logger.info("found suitable path straight to player");
                             walktarget.set(new WalkTarget(pos, speedModifier, closeEnoughDist));
                             return true;
-                        }else{
-                            logger.info("could not find suitable path straight to player");
-                            //this continues to the rest of the program
-                            // TODO: make this execution flow less messy
                         }
                     }
                     else{
 
-                        logger.info("distance is too large, giving up");
+//                        logger.info("distance is too large, giving up");
                         body.removeAttached(AttachmentTypes.PLAYER_TO_FOLLOW);
                         cantReachSince.set(timestamp);
                         body.getBrain().setActiveActivityIfPossible(Activity.IDLE);

@@ -14,11 +14,15 @@ public interface VillagerAccessor {
     @Invoker("shouldIncreaseLevel")
     boolean social_contract$shouldIncreaseLevel();
 
+    @Invoker("releaseAllPois")
+    void social_contract$releaseAllPois();
+
     @Accessor("increaseProfessionLevelOnUpdate")
     void social_contract$increaseProfessionLevelOnUpdate(boolean state);
 
     @Accessor("updateMerchantTimer")
     void social_contract$setUpdateMerchantTimer(int time);
+
 
 
 

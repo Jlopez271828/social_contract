@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 public class CustomItemTags {
 
     public static TagKey<Item> VILLAGER_GIFTABLE = create("villager_giftable");
+    public static TagKey<Item> VILLAGER_DECORATION = create("villager_decoration");
 
     private static TagKey<Item> create(String name){
         return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, name));

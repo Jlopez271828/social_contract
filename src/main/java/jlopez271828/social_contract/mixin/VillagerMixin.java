@@ -6,7 +6,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import jlopez271828.social_contract.Happiness;
 import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.behavior.CustomGoalPackages;
-import jlopez271828.social_contract.networking.ClientBoundMerchantInfoPayload;
+import jlopez271828.social_contract.networking.ClientBoundVillagerInfoPayload;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomActivities;
 import jlopez271828.social_contract.types.CustomReputationEventTypes;
@@ -38,22 +38,25 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.Map;
 
 @Mixin(Villager.class)
 public abstract class VillagerMixin extends AbstractVillager  {
 
+    @Unique
     private static final Logger logger = Social_contract.LOGGER;
 
+    //Dummy constructor
     VillagerMixin(final EntityType<? extends Villager> type, final Level level){
         super(type, level);
     }
@@ -67,7 +70,7 @@ public abstract class VillagerMixin extends AbstractVillager  {
 
 
 
-
+// Keeping this commented because I may end up re-implementing my stored data as Memories instead of attachments.
 //    @ModifyArgs(method = "<clinit>",
 //            at = @At(value = "INVOKE",
 //                    target = "Lnet/minecraft/world/entity/ai/Brain;provider(Ljava/util/Collection;Lnet/minecraft/world/entity/ai/Brain$ActivitySupplier;)Lnet/minecraft/world/entity/ai/Brain$Provider;"
@@ -86,7 +89,7 @@ public abstract class VillagerMixin extends AbstractVillager  {
     )
     private static List<ActivityData<?>> registerCustomActivity(List<ActivityData<?>> original){
         original.add(ActivityData.create(CustomActivities.FOLLOW_FRIEND, CustomGoalPackages.getFollowPackage()));
-//        original.add(ActivityData.create(CustomActivities.CLOSE_DOORS, ));
+
 
         return original;
     }
@@ -94,8 +97,6 @@ public abstract class VillagerMixin extends AbstractVillager  {
 
     @Inject(method = "releaseAllPois", at = @At(value = "HEAD"))
     private void clearBedAttachments(CallbackInfo ci){
-
-        Logger logger = LoggerFactory.getLogger("social_contract");
 
         Brain<?> brain = this.getBrain();
 
@@ -128,7 +129,19 @@ public abstract class VillagerMixin extends AbstractVillager  {
     private void sendExtraPacket(Player player, CallbackInfo ci){
 
         if(player instanceof ServerPlayer sp) {
-            ServerPlayNetworking.send(sp, new ClientBoundMerchantInfoPayload(this.getId(), 0));
+            Social_contract.scoreRoomWrapper((Villager) (Object) this);
+            Happiness happiness = Happiness.getOrAttach((Villager) (Object) this);
+            Map<Happiness.HappinessType, Integer> map = happiness.getMap();
+//            ServerPlayNetworking.send(sp, new ClientBoundVillagerInfoPayload(this.getId(), 0, Happiness.getHappiness((Villager) (Object) this)));
+            ServerPlayNetworking.send(sp, new ClientBoundVillagerInfoPayload(
+                    this.getId(),
+                    0,
+                    happiness.totalHappiness,
+                    map.get(Happiness.HappinessType.ROOM),
+                    map.get(Happiness.HappinessType.GIFT),
+                    map.get(Happiness.HappinessType.TRADE),
+                    map.get(Happiness.HappinessType.PAIN))
+            );
         }
     }
 
@@ -136,8 +149,6 @@ public abstract class VillagerMixin extends AbstractVillager  {
     @Inject(method = "updateTrades", at = @At("TAIL"))
     private void addCustomTrades(ServerLevel level, CallbackInfo ci, @Local(name = "data") VillagerData data){
 
-        logger.info("villager profession: {}", data.profession());
-        logger.info("desired profession: {}", VillagerProfession.LIBRARIAN);
 
         if(data.profession().is(VillagerProfession.LIBRARIAN)) {
 
@@ -148,14 +159,10 @@ public abstract class VillagerMixin extends AbstractVillager  {
 
                 //if we couldn't use the last traded book (or if there is no last traded book)
                 if (!Social_contract.trySetSavedBookTrade(offers, (Villager) (Object) this)) {
-                    if (profession_level == 3) {
-                        Social_contract.setRandomEnchantedBookTrade(offers, (Villager) (Object) this, EnchantmentTags.NON_TREASURE, level);
-                    } else if (profession_level == 4) {
-                        Social_contract.setRandomEnchantedBookTrade(offers, (Villager) (Object) this, EnchantmentTags.NON_TREASURE, level);
 
-                    } else if (profession_level == 5) {
-                        Social_contract.setRandomEnchantedBookTrade(offers, (Villager) (Object) this, EnchantmentTags.TREASURE, level);
-                    }
+                    //noinspection DataFlowIssue
+                    Social_contract.setRandomEnchantedBookTrade(offers, (Villager) (Object) this, EnchantmentTags.TRADEABLE, level);
+
 
                 }
 
@@ -225,21 +232,6 @@ public abstract class VillagerMixin extends AbstractVillager  {
         Happiness.decreaseHappiness(Social_contract.HAPPINESS_LOSS_DMG, (Villager) (Object) this);
 
     }
-
-    //This seems to run quite often, perhaps I should try another method of enforcing a happiness requirement on breeding
-    // so that we only check when absolutely necessary.
-//    @ModifyReturnValue(method = "canBreed", at = @At("RETURN"))
-//    private boolean constrainBreeding(boolean original){
-//
-//        if(Happiness.check((Villager) (Object) this, Social_contract.MIN_BREED_HAPPINESS)){
-//            return original;
-//        }else{
-//            return false;
-//        }
-//
-//    }
-
-
 
 
 }

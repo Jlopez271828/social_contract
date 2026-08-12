@@ -2,15 +2,12 @@ package jlopez271828.social_contract.mixin;
 
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import jlopez271828.social_contract.Happiness;
-import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.AcquirePoi;
 import net.minecraft.world.entity.ai.behavior.declarative.MemoryAccessor;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;

@@ -1,0 +1,23 @@
+{
+  "parent": "social_contract:root",
+  "criteria": {
+    "converted_illager": {
+      "trigger": "social_contract:convert_illager_criterion"
+    }
+  },
+  "display": {
+    "description": "Push A Villager too far",
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "id": "minecraft:arrow"
+    },
+    "title": "Don't come to the village tomorrow"
+  },
+  "requirements": [
+    [
+      "converted_illager"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

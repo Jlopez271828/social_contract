@@ -16,9 +16,4 @@ public class CustomGoalPackages {
 
     }
 
-//    public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> getCloseDoorsPackage(){
-//
-//
-//
-//    }
 }

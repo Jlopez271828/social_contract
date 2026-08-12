@@ -11,6 +11,7 @@ public class Social_contractDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(Social_contractModelGenerator::new);
         pack.addProvider(Social_contractRecipeProvider::new);
         pack.addProvider(Social_contractItemTagProvider::new);
+        pack.addProvider(Social_contractAdvancementProvider::new);
         //Languages
         pack.addProvider(Social_contractEnglishLangProvider::new);
         pack.addProvider(Social_contractRussianLangProvider::new);

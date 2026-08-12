@@ -6,7 +6,6 @@ import jlopez271828.social_contract.VillagerGiftSlot;
 import jlopez271828.social_contract.mixin.VillagerAccessor;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomActivities;
-import jlopez271828.social_contract.types.CustomMemoryModuleType;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -15,7 +14,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.Brain;
-import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +35,7 @@ public class PacketHandlers {
         PayloadTypeRegistry.serverboundPlay().register(ServerBoundFollowRequestPayload.TYPE, ServerBoundFollowRequestPayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(ServerBoundGiveGiftPayload.TYPE, ServerBoundGiveGiftPayload.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(ServerBoundFollowStopPayload.TYPE, ServerBoundFollowStopPayload.CODEC);
-        PayloadTypeRegistry.clientboundPlay().register(ClientBoundMerchantInfoPayload.TYPE, ClientBoundMerchantInfoPayload.CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(ClientBoundVillagerInfoPayload.TYPE, ClientBoundVillagerInfoPayload.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ClientBoundFollowConfirmPayload.TYPE, ClientBoundFollowConfirmPayload.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ClientBoundFollowStopConfirmPayload.TYPE, ClientBoundFollowStopConfirmPayload.CODEC);
 
@@ -64,7 +62,7 @@ public class PacketHandlers {
                         logger.info("reputation: {}", reputation);
 
                         // This button will also be a convenient way to force a room rescore.
-                        if(reputation >= Social_contract.MIN_FOLLOW_REPUTATION && Happiness.check(villager, Social_contract.MIN_FOLLOW_HAPPINESS, true, true)){
+                        if(reputation >= Social_contract.MIN_FOLLOW_REPUTATION && Happiness.check(villager, Social_contract.MIN_FOLLOW_HAPPINESS, true, false)){
 
 //                            logger.info("this player meets the requirements");
                             villager.playSound(SoundEvents.VILLAGER_CELEBRATE);
@@ -155,13 +153,11 @@ public class PacketHandlers {
 
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(ClientBoundMerchantInfoPayload.TYPE, (payload, context) -> {
-
-            logger.info("received entityId: {} and containerId: {} from a client bound packet", payload.entityId(), payload.containerId());
+        ClientPlayNetworking.registerGlobalReceiver(ClientBoundVillagerInfoPayload.TYPE, (payload, context) -> {
 
             Player player = context.player();
 
-            player.setAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT, payload.entityId());
+            player.setAttached(AttachmentTypes.EXTRA_VILLAGER_MENU_DATA_ATTACHMENT, payload);
 
         });
 

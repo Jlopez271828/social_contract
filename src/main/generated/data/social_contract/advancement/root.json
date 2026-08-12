@@ -1,0 +1,23 @@
+{
+  "criteria": {
+    "traded": {
+      "trigger": "minecraft:villager_trade"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "social_contract:villager_face.png",
+    "description": "Interact With Villagers",
+    "icon": {
+      "id": "minecraft:bell"
+    },
+    "show_toast": false,
+    "title": "Social Contract"
+  },
+  "requirements": [
+    [
+      "traded"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

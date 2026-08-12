@@ -1,3 +1,6 @@
 {
-  "item.social_contract.bouquet": "Букет"
+  "item.social_contract.bouquet": "Букет",
+  "text.social_contract.follow_button_start_tooltip": "Запросить у крестья́нина следовать за вами",
+  "text.social_contract.follow_button_stop_tooltip": "перестать следить за вами.",
+  "text.social_contract.gift_button_tooltip": "Подари подарок этому крестьянину"
 }

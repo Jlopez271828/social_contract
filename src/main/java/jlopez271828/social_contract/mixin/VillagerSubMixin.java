@@ -19,8 +19,9 @@ public class VillagerSubMixin extends LivingEntityMixin {
 
     @Override
     protected void overrideForVillager(ServerLevel level, DamageSource source, float dmg, Operation<Void> original) {
-        Happiness.decreaseHappiness((int) (Social_contract.HAPPINESS_LOSS_DMG * dmg), (Villager) (Object) this);
         original.call(level, source, dmg);
+        Happiness.decreaseHappiness((int) (Social_contract.HAPPINESS_LOSS_DMG * dmg), (Villager) (Object) this);
+
     }
 
 

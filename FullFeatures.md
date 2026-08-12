@@ -22,6 +22,7 @@
    - Each happiness type has a max value
    - Any GIFT or TRADE happiness gained will first be used to increase the PAIN value towards a max of 0.
    - A Villagers happiness is treated as the sum of all types.
+   - There is a new happiness display in the trading menu
 <br><br>
 4. Hurting a Villager will decrease its happiness depending on how much damage was done.
 <br><br>
@@ -29,7 +30,7 @@
    - Giving gifts to villagers will increase their Happiness
    - Items that can be gifted to Villagers belong to the ``VILLAGER_GIFTABLE`` tag.
 <br><br>
-6. Only Level 4 and Level 5 of librarians offer Enchanted Book trades
+6. Only Level 3, 4 and 5 of Librarians offer Enchanted Book trades
     -  Villagers that have been gifted an enchanted book will sell that book when leveled up.
     - Villagers that have not been gifted a book will sell a random enchanted book, for level 4, it will be a random non-treasure enchanted book. For level 5, it will be a random Treasure enchanted book.
     - As of 26.1.2, this process is not data-driven due to lack of needed features.
@@ -45,9 +46,11 @@
       <br><br>
 10. Villagers will only offer trades according to their Happiness
      - A fully leveled Villager will only offer trades for which the minimum requirements have been met.
+     - Catches the case of if a Villager fully levels up, but then loses happiness.
        <br><br>
 11. Librarians can be given a Signed Book where it will check the title or the first page for
     an enchantment, then sell that enchantment when it levels up, assuming a minimum happiness is met.
+    - Villagers will not accept request for restricted Enchantments such as Soul Speed and Swift Sneak.
 <br><br>
 12. Villagers taking any damage will decrease their Happiness.
 <br><br>
@@ -62,14 +65,28 @@
 17. Gifting a Villager food will add it to its inventory to be used during breeding.
 <br><br>
 18. Villagers will close all doors connected to their room during nighttime.
+<br><br>
+19. Librarians can be gifted enchanted books such as Swift Sneak and Soul Speed
+    - But, in order for them to accept, they need a higher level of happiness than normal.
+<br><br>
+20. Villagers that are too low on Happiness will become Illagers
+     - Clerics and Librarians will become Evokers
+     - Others will become vindicators
+     - Fletchers will become Pillagers
+     - Illagers spawned this way will not drop items.
+<br><br>
+21. Villagers can be gifted decorations
+    - Villagers that have decorations will try to place them inside of their room.
+    - Currently, decorations include Paintings and Pots.
 
 
 # Not Implemented
 
-1. Villagers will sometimes try to wander outside and look at the sky. 
-   - If they cannot see the sky, a PAIN happiness will be obtained.
-2. Villagers will give discounts on goods if they reach a certain Happiness.
-3. The Villager gui should display some indication of Happiness.
+1. Villagers will give discounts on goods if they reach a certain Happiness.
+2. Villagers should not pathfind to fall 2 blocks or more.
+3. Villagers can interact with jukeboxes.
+   - Villagers that have been given music discs will play them occasionally 
+4. If a villager has a home, limit how far it can wonder from it.
 
 # Planned for the future
 1. The scoring algorithm will be changed from a naive flood fill to a more advanced algorithm.
@@ -109,12 +126,13 @@ around.
 <br><br>
 9. A Bard Villager will be added.
     - A normal villager can be converted into a bard by gifting them instruments.
+    - Bard Villagers will sell music discs
+    - Bard Villagers will play a song when gifted an Emerald
 <br><br>
-10. Villagers can be gifted room decorations.
-    - Decorations will be things such as: pots, paintings, rugs.
-    - Villagers who have room decorations on them will try to place them in the appropriate spots.
-    - Successfully placed decorations will award extra points to their room score.
+10. More Room decorations will be supported.
 <br><br>
 11. A Village post board could be added
     - This board will act almost like a sign, Villagers will come to it to try and plan festivals
     - The board will display missing requirements for festivals that Villagers are trying to produce.
+<br><br>
+12. A new type of ruin / dungeon could be added that requires a (willing) Villager to complete.

@@ -1,6 +1,10 @@
 {
   "values": [
     {
+      "id": "#social_contract:villager_decoration",
+      "required": false
+    },
+    {
       "id": "#minecraft:villager_picks_up",
       "required": false
     },

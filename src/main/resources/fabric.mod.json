@@ -20,7 +20,10 @@
 		],
 		"fabric-datagen": [
           "jlopez271828.social_contract.datagen.Social_contractDataGenerator"
-		]
+		],
+        "modmenu": [
+          "jlopez271828.social_contract.ModMenuApiImp"
+        ]
 	},
 	"mixins": [
       "social_contract.mixins.json"
@@ -31,5 +34,17 @@
 		"java": ">=25",
 		"fabric-api": "*"
 	},
-    "accessWidener": "social_contract.classtweaker"
+    "accessWidener": "social_contract.classtweaker",
+    "custom": {
+      "modmenu": {
+
+        "links": {
+          "modmenu.discord": "https://discord.gg/xvsXpZXpx8"
+        },
+        "update_checker": false
+
+
+
+      }
+    }
 }

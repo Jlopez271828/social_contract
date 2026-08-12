@@ -3,22 +3,43 @@ package jlopez271828.social_contract;
 import com.mojang.serialization.Codec;
 import jlopez271828.social_contract.mixin.VillagerAccessor;
 import jlopez271828.social_contract.types.AttachmentTypes;
+import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.ConversionParams;
+import net.minecraft.world.entity.ConversionType;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.monster.illager.AbstractIllager;
+import net.minecraft.world.entity.monster.illager.Pillager;
 import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
+import org.jspecify.annotations.NonNull;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
  * Class that manages happiness. This class is meant to resemble the Villager gossips system and is currently using
  * data attachments to function. I'm a bit worried with storing such a large class as a data attachment, but there
  * aren't many good alternatives.
+ *
+ * <p>
+ *     This class works by using a map of Enums {@link HappinessType} to integers, the value of that particular happiness.
+ *     The total happiness is the sum of all types. There exists a {@link #totalHappiness} field that serves
+ *     to facilitate quick lookups, it is updated whenever happiness is changed.
+ * </p>
  */
 public class Happiness {
 
     private final Map<HappinessType, Integer> store;
     //Tracker for quick access for comparisons
-    private int totalHappiness;
+    public int totalHappiness;
 
     public static final Codec<Happiness> CODEC = Codec.unboundedMap(HappinessType.CODEC, Codec.INT)
             .xmap(Happiness::new, happiness -> happiness.store);
@@ -44,6 +65,9 @@ public class Happiness {
 
     }
 
+    /**
+     * Recalculates the {@link #totalHappiness} field of this Happiness class.
+     */
     public void recalculateTotal() {
 
         int total = 0;
@@ -55,7 +79,13 @@ public class Happiness {
     }
 
 
-    //helper function to be called statically
+    /**
+     * This is a static helper method used to increase happiness of a specific type. This will get a Villager's Happiness
+     * Attaching one if it does not have it, and then increase the given type's value, bounded by that type's maximum.
+     * @param toAdd the amount to add
+     * @param villager the Villager in question
+     * @param type The happiness to increase
+     */
     public static void increaseHappiness(int toAdd, Villager villager, HappinessType type) {
 
         Happiness happiness = getOrAttach(villager);
@@ -74,28 +104,64 @@ public class Happiness {
 
         }
 
-
-    }
-
-    //Pain is the negative storage for happiness, and all positive additions will first go to making pain 0.
-    public void increaseHappiness(int toAdd, HappinessType type) {
-
-        int painValue = this.store.get(HappinessType.PAIN);
-        if(painValue > 0){
-            painValue += toAdd;
-            if(painValue > 0){
-                toAdd = painValue;
-                this.store.put(HappinessType.PAIN, 0);
-            }else{
-                return;
+        if(villager.level() instanceof ServerLevel serverLevel) {
+            if(happiness.totalHappiness >= Social_contract.MIN_HAPPINESS_REQUEST) {
+                List<Player> players = serverLevel.getNearbyPlayers(TargetingConditions.forNonCombat(), villager, AABB.ofSize(villager.position(), 10, 5, 10));
+                if (!players.isEmpty()) {
+                    for (Player player : players) {
+                        if (player instanceof ServerPlayer sp) {
+                            CustomCriteria.ALTRUIST_CRITERION.trigger(sp);
+                        }
+                    }
+                }
             }
         }
 
-        this.store.put(type, Math.min(type.maxValue, toAdd));
 
     }
 
-    //helper function to be called statically
+    /**
+     * This method will increase the value of a Happiness type, bounded by that type's maximum. This method will first
+     * try to increase the PAIN value towards its maximum of 0, then it will increase the given type's value.
+     * @param toAdd the amount to add
+     * @param type the type of happiness to increase.
+     */
+    public void increaseHappiness(int toAdd, HappinessType type) {
+
+        //pain is negative
+        int oldPainValue = this.store.get(HappinessType.PAIN);
+        if(oldPainValue < HappinessType.PAIN.maxValue){
+            int newPainValue = oldPainValue + toAdd;
+            if(newPainValue > HappinessType.PAIN.maxValue){
+                toAdd = newPainValue;
+                this.totalHappiness += newPainValue - oldPainValue;
+                this.store.put(HappinessType.PAIN, 0);
+            }else{
+                this.store.put(HappinessType.PAIN, newPainValue);
+                this.totalHappiness += toAdd;
+                return;
+            }
+
+
+
+        }
+
+        int oldValue = this.store.get(type);
+        int newValue = Math.min(type.maxValue, oldValue + toAdd);
+
+        this.store.put(type, Math.min(type.maxValue, newValue));
+
+        this.totalHappiness += newValue - oldValue;
+
+    }
+
+    /**
+     * This is a static helper method to decrease a Villager's happiness. It will get that Villager's happiness, attaching
+     * one if that Village doesn't have it, and then decrease the given type's value, bounded by that type's minimum.
+     * @param toSubtract the amount to subtract
+     * @param villager the Villager to subtract from
+     * @param type the type of happiness to subtract.
+     */
     public static void decreaseHappiness(int toSubtract, Villager villager, HappinessType type) {
 
         Happiness happiness = getOrAttach(villager);
@@ -106,6 +172,12 @@ public class Happiness {
 
     }
 
+    /**
+     * This is a static helper method to decrease a Villager's happiness. It will get the Villager's happiness, attaching
+     * one if that Villager does not have it, then decrease its PAIN value.
+     * @param toSubtract the amount to subtract.
+     * @param villager the Villager to subtract from
+     */
     public static void decreaseHappiness(int toSubtract, Villager villager){
 
         Happiness happiness = getOrAttach(villager);
@@ -114,8 +186,21 @@ public class Happiness {
 
         villager.setAttached(AttachmentTypes.VILLAGER_HAPPINESS, happiness);
 
+        if(villager.level() instanceof ServerLevel serverLevel) {
+            Social_contract.tryConvertVillager(villager, serverLevel, happiness.totalHappiness);
+        }else{
+            Social_contract.LOGGER.warn("for some reason this code is being ran on the client");
+        }
+
+
+
     }
 
+    /**
+     * This will decrease the value of a specific type of happiness. Bounded by that type's minimum.
+     * @param toSubtract the amount to subtract
+     * @param type the type of happiness to subtract from
+     */
     public void decreaseHappiness(int toSubtract, HappinessType type) {
 
         int oldValue = this.store.get(type);
@@ -128,7 +213,8 @@ public class Happiness {
 
 
     /**
-     * Static helper function which calls {@link #setHappiness(int, HappinessType)}
+     * Static helper function which calls {@link #setHappiness(int, HappinessType)} on the happiness attached to
+     * the Villager. Will attach a happiness to the Villager if it does not have one.
      * @param value the value to set
      * @param villager the Villager in question
      * @param type the specific {@link HappinessType} to use.
@@ -140,17 +226,6 @@ public class Happiness {
         happiness.setHappiness(value, type);
 
         villager.setAttached(AttachmentTypes.VILLAGER_HAPPINESS, happiness);
-
-
-
-        VillagerAccessor accessor = (VillagerAccessor) villager;
-
-        if(accessor.social_contract$shouldIncreaseLevel()){
-            accessor.social_contract$setUpdateMerchantTimer(40);
-            accessor.social_contract$increaseProfessionLevelOnUpdate(true);
-
-        }
-
 
 
     }
@@ -167,9 +242,6 @@ public class Happiness {
         int delta = value - oldValue;
         this.store.put(type, value);
         this.totalHappiness += delta;
-
-
-
 
     }
 
@@ -199,6 +271,9 @@ public class Happiness {
         }
 
         Happiness happiness = villager.getAttached(AttachmentTypes.VILLAGER_HAPPINESS);
+
+        Social_contract.LOGGER.info("happiness for this check: {}", happiness);
+
         if(happiness == null){
             return 0;
         }else{
@@ -291,6 +366,8 @@ public class Happiness {
 
         Happiness happiness = villager.getAttached(AttachmentTypes.VILLAGER_HAPPINESS);
 
+        Social_contract.LOGGER.debug("Happiness for this check: {}", happiness);
+
         if (happiness == null) {
             return false;
         }
@@ -356,9 +433,13 @@ public class Happiness {
         }
 
         @Override
-        public String getSerializedName() {
+        public @NonNull String getSerializedName() {
             return this.name;
         }
+    }
+
+    public Map<HappinessType, Integer> getMap(){
+        return this.store;
     }
 
 

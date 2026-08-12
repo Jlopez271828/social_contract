@@ -35,17 +35,9 @@ abstract class VillagerBoundRandomStrollMixin {
         Vec3 result = RandomPos.generateRandomPos(() -> {
             BlockPos direction = RandomPos.generateRandomDirection(mob.getRandom(), horizontalDist, verticalDist);
             BlockPos pos = LandRandomPos.generateRandomPosTowardDirection(mob, horizontalDist, restriction, direction);
-//            if(pos == null){
-//                logger.info("got null pos 3");
-//            }else{
-//                logger.info("pos before moving up: {}", pos.toString());
+
                 pos = pos != null ? LandRandomPos.movePosUpOutOfSolid(mob, pos) : null;
-//                if(pos != null){
-//                    logger.info("pos after moving up: {}", pos.toString());
-//                }else{
-//                    logger.info("got null pos 4");
-//                }
-//            }
+
 
             return pos;
         },
@@ -56,7 +48,7 @@ abstract class VillagerBoundRandomStrollMixin {
 
         });
 
-//        logger.info("tried to find random stroll target at {}", result.toString());
+
 
         if(result == null || blockEngine.getLightValue(new BlockPos((int)result.x(), (int)result.y(), (int)result.z())) <= 0){
 //            logger.info("could not find suitable walk target in the first try");
@@ -109,57 +101,6 @@ abstract class VillagerBoundRandomStrollMixin {
 
     }
 
-//    private static Vec3 getGoodLandPos(PathfinderMob mob, int horizontalDist, int verticalDist){
-//
-//        LightEngine<?, ?> blockEngine =  ((LightingAccessor) mob.level().getLightEngine()).social_contract2$getBlockEngine();
-//
-//        Logger logger = LoggerFactory.getLogger("social_contract");
-//
-//        boolean restriction = GoalUtils.mobRestricted(mob, horizontalDist);
-//
-//        BlockPos feet = mob.blockPosition();
-//
-//        RandomSource random = mob.getRandom();
-//
-//        BlockPos target;
-//
-//        Level level = mob.level();
-//
-//        for(int i = 0; i < MAX_TRIES; i++){
-//
-//            int dx = random.nextInt(2 * horizontalDist) - horizontalDist;
-//            int dz = random.nextInt(2 * horizontalDist) - horizontalDist;
-//
-//            target = new BlockPos(feet.offset(dx, 0, dz));
-//
-//            if(level.getBlockState(target).isAir()){
-//                //go down until we encounter first solid block
-//                for(int k = 0; k < verticalDist; k++){
-//                    target = target.below();
-//                    if(!level.getBlockState(target).isAir()){
-//                        return Vec3.atBottomCenterOf(target.above());
-//
-//                    }
-//
-//                }
-//
-//            }else{
-//
-//                //go up untill we encounter first air block
-//                for(int k = 0; k < verticalDist; k++){
-//                    target = target.above();
-//                    if(level.getBlockState(target).isAir()){
-//                        return Vec3.atBottomCenterOf(target);
-//
-//                    }
-//                }
-//
-//            }
-//
-//
-//        }
-//
-//    }
 
 
 

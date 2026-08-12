@@ -1,21 +1,32 @@
 package jlopez271828.social_contract;
 
+import jlopez271828.social_contract.mixin.VillagerAccessor;
 import jlopez271828.social_contract.networking.PacketHandlers;
+import jlopez271828.social_contract.old.CustomMemoryModuleType;
+import jlopez271828.social_contract.old.CustomMenuTypes;
 import jlopez271828.social_contract.types.*;
 import net.fabricmc.api.ModInitializer;
-
 import net.minecraft.core.*;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.monster.illager.AbstractIllager;
+import net.minecraft.world.entity.monster.illager.Evoker;
+import net.minecraft.world.entity.monster.illager.Pillager;
+import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.minecraft.world.entity.npc.villager.Villager;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.WrittenBookContent;
@@ -27,7 +38,11 @@ import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,19 +54,28 @@ public class Social_contract implements ModInitializer {
     public static final float ENCHANTED_BOOK_MULTIPLIER = 0.05f;
     public static final int ENCHANTED_BOOK_MAX_USES = 12;
 
+    public static final int ENCHANTMENT_COST_A = 32;
+    public static final int ENCHANTMENT_COST_B = 25;
+
+    public static final float DISCOUNT = 0.80f;
+
     public static final int[] xpPerLevel = {1, 5, 10, 15, 30};
 
     public static final int MAX_ROOM_SIZE = 500;
-    private static final int MIN_GOOD_SCORE = 4;
+    public static final int MIN_GOOD_SCORE = 4;
+
+
 
     //this should be in ticks.
-    private static final long ROOM_SCORE_COOLDOWN = 40 * 20;
+    public static final long ROOM_SCORE_COOLDOWN = 40 * 20;
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final int MIN_FOLLOW_REPUTATION = 10;
-    public static final int MIN_FOLLOW_HAPPINESS = 10;
+    public static final int MIN_FOLLOW_HAPPINESS = 20;
     public static final int MIN_BREED_HAPPINESS = 60;
 
+
+    // TODO : rebalance these
     //Minimum happiness values for a villager to level up
     public static final int MIN_HAPPINESS_LEVEL_2 = 20;
     public static final int MIN_HAPPINESS_LEVEL_3 = 50;
@@ -67,12 +91,14 @@ public class Social_contract implements ModInitializer {
     };
 
     public static final int MIN_HAPPINESS_DISCOUNT = 200;
-    public static final int MIN_HAPPINESS_REQUEST = 280;
+    public static final int MIN_HAPPINESS_REQUEST = 300;
+
+    public static final int HAPPINESS_FOR_ILLAGER = -660 - 6;
 
     //Happiness values for various events
     public static final int HAPPINESS_FOR_TRADE = 2;
-    public static final int HAPPINESS_LOSS_NEARBY_DEATH = 5;
-    public static final int HAPPINESS_LOSS_DMG = 5;
+    public static final int HAPPINESS_LOSS_NEARBY_DEATH = 80;
+    public static final int HAPPINESS_LOSS_DMG = 15; //per heart
 
     public static final int MAX_GIFT_HAPPINESS = 25;
     public static final int MAX_ROOM_HAPPINESS = MAX_ROOM_SIZE;
@@ -109,11 +135,12 @@ public class Social_contract implements ModInitializer {
             NUM_TRADES_LEVEL_5
     };
 
+
+    public static final int MAX_USED_HAPPINESS = MIN_HAPPINESS_REQUEST;
+
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+
 
 		LOGGER.info("Hello Fabric world!");
 
@@ -126,6 +153,7 @@ public class Social_contract implements ModInitializer {
         CustomItems.initialize();
         PacketHandlers.initialize();
         AttachmentTypes.initialize();
+        CustomCriteria.initialize();
 
 
 
@@ -134,11 +162,17 @@ public class Social_contract implements ModInitializer {
 	}
 
 
+    /**
+     * This will try to set an Enchanted Book trade from an Enchanted Book or Request gifted to the villager.
+     *
+     * @param offers The Villager's offers
+     * @param villager The Villager
+     * @return Whether it could find a suitable enchanted book.
+     */
     public static boolean trySetSavedBookTrade(MerchantOffers offers, Villager villager){
 
         if(villager.hasAttached(AttachmentTypes.LAST_GIFTED_BOOK)){
 
-            LOGGER.info("this villager has been given an enchanted book");
             ItemStack gift = villager.getAttached(AttachmentTypes.LAST_GIFTED_BOOK);
 
             if(gift != null) {
@@ -174,15 +208,21 @@ public class Social_contract implements ModInitializer {
 
         }
 
-        LOGGER.info("this villager has not been given an enchanted book");
         return false;
 
     }
 
+    /**
+     * Will add a new Enchanted Book trade into the given offers, selecting the enchantment randomly from the given Enchantment Tag.
+     * Will decide its cost in emeralds by calling {@link #decideCost(Holder, int, RandomSource)}
+     * @param offers the offers in question
+     * @param villager the villager in question
+     * @param tagKey The enchantment tag to select from
+     * @param level The server level
+     */
     public static void setRandomEnchantedBookTrade(MerchantOffers offers, Villager villager, TagKey<Enchantment> tagKey, ServerLevel level){
 
 
-        LOGGER.info("trying to set random enchanted book trade");
         Optional<HolderSet.Named<Enchantment>> optionalSet = level.registryAccess().get(tagKey);
 
         if(optionalSet.isPresent()){
@@ -190,20 +230,6 @@ public class Social_contract implements ModInitializer {
             HolderSet<Enchantment> set = optionalSet.get();
 
             Holder<Enchantment> holder = set.get(villager.getRandom().nextInt(0, set.size() - 1));
-
-            LOGGER.info("enchantment found is {}", holder.value());
-
-
-//            int maxLevel = holder.value().getMaxLevel();
-//            int minLevel = holder.value().getMinLevel();
-//            int enchantLevel = minLevel;
-//            int currentHappiness = Happiness.getHappiness(villager);
-//            for(int i = Math.min(maxLevel, MIN_HAPPINESS_LEVELS.length); i >= minLevel; i--){
-//                if(currentHappiness >= MIN_HAPPINESS_LEVELS[i - 1]){
-//                    enchantLevel = i;
-//                    break;
-//                }
-//            }
 
             int enchantLevel = getMaxAllowedEnchantmentLevel(villager, holder.value());
 
@@ -250,7 +276,7 @@ public class Social_contract implements ModInitializer {
         // Many calls to offers.size(), I wonder if it would be quicker (but redundant) to simply keep our own size variable
         for(int i = 1; i < Math.min(MIN_HAPPINESS_LEVELS.length, level); i++){
 
-            LOGGER.info("checking requirements for level {}", i + 1);
+
             if(
                     happiness >= Social_contract.MIN_HAPPINESS_LEVELS[i]
                             && offers.size() >= Social_contract.NUM_LEVEL_TRADES[i]
@@ -263,7 +289,7 @@ public class Social_contract implements ModInitializer {
                 }
 
             }else{
-                LOGGER.info("this villager does not meet requirements for level {}", i + 1);
+
                 return newOffers;
             }
 
@@ -275,7 +301,10 @@ public class Social_contract implements ModInitializer {
 
     }
 
-
+    /**
+     * Scans a WrittenBookContent's first page and title, if it contains the name of an enchantment, return that enchantment.
+     *
+     */
     public static Holder.Reference<Enchantment> getEnchantmentRequest(WrittenBookContent content, RegistryAccess access){
 
         if(content != null){
@@ -288,14 +317,12 @@ public class Social_contract implements ModInitializer {
 
             for(String text : searchStrings){
 
-                LOGGER.info(text);
 
                 for(Identifier identifier : enchantments.keySet()){
 
 
                     if(text.contains(identifier.getPath())){
 
-                        LOGGER.info("found match: {}", identifier);
                         return enchantments.get(identifier).orElse(null);
 
                     }
@@ -372,8 +399,19 @@ public class Social_contract implements ModInitializer {
 
                 Happiness.setHappiness(score, villager, Happiness.HappinessType.ROOM);
 
+                // TODO: I ran into looping issues because I tried to put the logic of setting the update trades flag inside of
+                // setHappiness before setting the LAST_ROOM_SCORE_TIME attachment.
                 villager.setAttached(AttachmentTypes.LAST_ROOM_SCORE_TIME, level.getGameTime());
                 villager.setAttached(AttachmentTypes.ROOM_DOORS, scoreResult.doorList());
+
+                VillagerAccessor accessor = (VillagerAccessor) villager;
+
+                if(accessor.social_contract$shouldIncreaseLevel()){
+                    accessor.social_contract$setUpdateMerchantTimer(40);
+                    accessor.social_contract$increaseProfessionLevelOnUpdate(true);
+
+                }
+
 
                 if (score > MIN_GOOD_SCORE) {
                     level.broadcastEntityEvent(villager, (byte) 14);
@@ -394,6 +432,23 @@ public class Social_contract implements ModInitializer {
 
     }
 
+    /**
+     * Will decide the cost of an Enchantment should have when placed on a book and traded.
+     * <p>
+     * Currently, Enchantments are grouped into 2 groups, A for expensive Enchantments, and B for cheap enchantments.
+     * Each group of enchantments has a base cost for a max level enchantment. If an enchantment is of lesser level, it
+     * will receive a discount of 5 emeralds per deviation from the max. All items will randomly change their cost following
+     *{baseCost  - 4 <= cost <= baseCost + 2}.
+     * </p>
+     * <p>
+     *     This system is designed so that each piece of max enchanted gear will cost about the same, with some deviation
+     *     Accounting for gear that has naturally fewer enchantments (Leggings).
+     * </p>
+     * @param enchantmentHolder The enchantment on the book
+     * @param desiredLevel The level that the enchantment will have applied once its on the book.
+     * @param random a random source.
+     * @return the cost
+     */
     public static int decideCost(Holder<Enchantment> enchantmentHolder, int desiredLevel, RandomSource random){
 
         int cost = enchantmentHolder.is(CustomEnchantmentTags.ENCHANTMENT_GROUP_B) ? 25 : 32;
@@ -473,8 +528,13 @@ public class Social_contract implements ModInitializer {
 
     }
 
+    /**
+     * Will change swap out the result of an offer at a given index.
+     * @param offers The Offers to change
+     * @param index the index of the offer to change
+     * @param newResult the ItemStack to replace the old result
+     */
     public static void changeOfferResult(MerchantOffers offers, int index, ItemStack newResult){
-
         MerchantOffer offer = offers.get(index);
         ItemStack result = offer.getResult();
         offers.remove(index);
@@ -490,6 +550,235 @@ public class Social_contract implements ModInitializer {
                 )
         );
 
+
+    }
+
+
+    public static void summonLighting(Vec3 pos, ServerLevel level){
+
+        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.CONVERSION);
+        if(bolt == null){
+            return;
+        }
+        bolt.setVisualOnly(true);
+        bolt.setPos(pos);
+        level.addFreshEntity(bolt);
+
+    }
+
+    public static AbstractIllager tryConvertVillager(Villager villager, ServerLevel level, int happiness){
+
+
+
+        if(happiness < Social_contract.HAPPINESS_FOR_ILLAGER && villager.isAlive()){
+
+            Holder<VillagerProfession> professionHolder = villager.getVillagerData().profession();
+
+            EntityType<? extends AbstractIllager> entityType;
+
+
+            if(professionHolder.is(VillagerProfession.LIBRARIAN) || professionHolder.is(VillagerProfession.CLERIC)){
+                entityType = EntityType.EVOKER;
+//                illager2 = EntityType.EVOKER.create(level, EntitySpawnReason.CONVERSION);
+            }else if (professionHolder.is(VillagerProfession.FLETCHER)){
+                entityType = EntityType.PILLAGER;
+//                illager2 = EntityType.PILLAGER.create(level, EntitySpawnReason.CONVERSION);
+            }else{
+                entityType = EntityType.VINDICATOR;
+//                illager2 = EntityType.VINDICATOR.create(level, EntitySpawnReason.CONVERSION);
+            }
+
+            ((VillagerAccessor) villager).social_contract$releaseAllPois();
+
+//            Vec3 pos = villager.position();
+//            Vec3 lookAngle = villager.getLookAngle();
+
+            AbstractIllager illager = villager.convertTo(entityType, new ConversionParams(ConversionType.SINGLE, false, false, null), mob -> {});
+            if(illager != null) {
+
+                Social_contract.summonLighting(illager.position(), (ServerLevel) illager.level());
+                illager.setAttached(AttachmentTypes.SHOULD_DROP_LOOT, false);
+                List<Player> players =  level.getNearbyPlayers(TargetingConditions.forNonCombat(), illager, AABB.ofSize(illager.position(), 10, 5, 10));
+                if(!players.isEmpty()){
+                    for(Player player : players){
+                        if(player instanceof ServerPlayer sp) {
+                            CustomCriteria.CONVERT_ILLAGER.trigger(sp);
+                        }
+                    }
+                }
+                return illager;
+            }
+
+//            villager.remove(Entity.RemovalReason.DISCARDED);
+//            if(illager2 != null){
+//
+//                illager2.setPos(pos);
+//
+//                ValueOutput output = new TagValueOutput
+//
+//                illager2.saveWithoutId(nbt);
+//
+//
+//            }
+
+
+        }
+
+        return null;
+
+
+    }
+
+
+    public static DecorationResult getDecorationSpot(final Vec3 start, RandomSource random, ServerLevel level){
+
+        DecorationResult toReturn;
+
+        for(int i = 0; i < 3; i++){
+            toReturn = getPaintingSpot(start, random.nextInt(0, 360), level);
+            if(toReturn != null){
+                return toReturn;
+            }
+        }
+
+        return null;
+
+
+    }
+
+
+
+    public static DecorationResult getPaintingSpot(final Vec3 start, double ang, ServerLevel level){
+
+
+
+        double dirX = -1 * Math.sin(ang);
+        double dirZ = Math.cos(ang);
+
+        int posX = Mth.floor(start.x());
+        int posZ = Mth.floor(start.z());
+        int posY = Mth.floor(start.y());
+
+        int lastX = posX;
+        int lastZ = posZ;
+
+        int stepX;
+        if(dirX > 0){
+            stepX = 1;
+        }else if(dirX < 0){
+            stepX = -1;
+        }else{
+            stepX = 0;
+        }
+
+        int stepZ;
+        if(dirZ > 0){
+            stepZ = 1;
+        }else if(dirZ < 0){
+            stepZ = -1;
+        }else{
+            stepZ = 0;
+        }
+
+        double delX;
+        if(dirX != 0){
+            delX = Math.abs(1 / dirX);
+        }else{
+            delX = Double.POSITIVE_INFINITY;
+        }
+
+        double delZ;
+        if(dirZ != 0){
+            delZ = Math.abs(1 / dirZ);
+        }else{
+            delZ = Double.POSITIVE_INFINITY;
+        }
+
+        double maxX;
+        if(dirX > 0){
+            maxX = (posX + 1 - start.x()) * delX;
+        }else if(dirX < 0){
+            maxX = (start.x() - posX) * delX;
+        }else{
+            maxX = Double.POSITIVE_INFINITY;
+        }
+
+        double maxZ;
+        if(dirZ > 0){
+            maxZ = (posZ + 1 - start.z()) * delZ;
+        }else if(dirZ < 0){
+            maxZ = (start.z() - posZ) * delZ;
+        }else{
+            maxZ = Double.POSITIVE_INFINITY;
+        }
+
+        for(int i = 0; i < 40; i++){
+
+            BlockPos blockPos = new BlockPos(posX, posY, posZ);
+            BlockState state = level.getBlockState(blockPos);
+            if(!state.getCollisionShape(level, blockPos, CollisionContext.empty()).isEmpty()){
+
+
+                BlockPos decorationSpot = new BlockPos(lastX, posY, lastZ);
+
+                if(!level.getBlockState(decorationSpot).isAir()){
+                    return null;
+                }
+
+                Direction direction;
+
+                if(posX - lastX > 0){ //we moved in the positive x direction: east
+                    direction = Direction.WEST;
+                }else if(posX - lastX < 0){// we moved in the negative x direction: west
+                    direction = Direction.EAST;
+                }else if(posZ - lastZ > 0){ //we moved in the positive z direction: south
+                    direction = Direction.NORTH;
+                }else {// we moved in the negative z direction: north
+                    direction = Direction.SOUTH;
+                }
+
+                BlockPos decorationFloor = getFloorBelow(decorationSpot, level);
+
+                return new DecorationResult(decorationSpot, decorationFloor, blockPos, direction);
+            }
+//            else{//for debugging
+//                level.setBlock(blockPos, Blocks.RED_STAINED_GLASS.defaultBlockState(), 1);
+//            }
+
+            lastX = posX;
+            lastZ = posZ;
+
+            if(maxX < maxZ){
+                maxX += delX;
+                posX += stepX;
+            }else{
+                maxZ += delZ;
+                posZ += stepZ;
+            }
+        }
+
+
+        return null;
+
+
+    }
+
+    public static BlockPos getFloorBelow(final BlockPos start, final ServerLevel level){
+
+        BlockPos current = start;
+        BlockPos previous = start;
+
+        for(int i = 0; i < 40; i++){
+            BlockState state = level.getBlockState(current);
+            if(!state.getCollisionShape(level, current, CollisionContext.empty()).isEmpty()){
+                return previous;
+            }else{
+                previous = current;
+                current = current.below();
+            }
+        }
+
+        return null;
 
     }
 

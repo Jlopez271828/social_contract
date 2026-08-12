@@ -1,12 +1,11 @@
 package jlopez271828.social_contract;
 
-import jlopez271828.social_contract.mixin.VillagerAccessor;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomItemTags;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.inventory.MerchantContainer;
@@ -20,6 +19,9 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class VillagerGiftSlot extends Slot {
@@ -46,11 +48,11 @@ public class VillagerGiftSlot extends Slot {
 
     //this method does indeed run every time an item is placed inside the slot
     //should be called onPlace tbh
-    @Override
-    public void setByPlayer(final ItemStack itemStack){
-        logger.info("item {} was placed by player", itemStack);
-        super.setByPlayer(itemStack);
-    }
+//    @Override
+//    public void setByPlayer(final ItemStack itemStack){
+//        logger.info("item {} was placed by player", itemStack);
+//        super.setByPlayer(itemStack);
+//    }
 
     /**
      * This method runs the logic when a villager accepts a gift. This method will be ran from the server.
@@ -77,6 +79,7 @@ public class VillagerGiftSlot extends Slot {
 
                 }
 
+
                 EnchantmentInstance giftInfo  = Social_contract.getFirstEnchantment(gift);
                 if(giftInfo == null){
                     return;
@@ -84,6 +87,12 @@ public class VillagerGiftSlot extends Slot {
 
                 //For a gifted enchanted book, it will only accept it if the level of the book is at the max or lower than it's allowed to sell
                 if(giftInfo.level() > Social_contract.getMaxAllowedEnchantmentLevel(villager, giftInfo.enchantment().value())){
+                    villager.playSound(SoundEvents.VILLAGER_NO);
+                    return;
+                }
+
+                // You can clone restricted enchantments with a librarian, however, that villager will need a very high happiness to do so.
+                if(!giftInfo.enchantment().is(EnchantmentTags.TRADEABLE) && !Happiness.check(villager, Social_contract.MIN_HAPPINESS_REQUEST)){
                     villager.playSound(SoundEvents.VILLAGER_NO);
                     return;
                 }
@@ -125,7 +134,7 @@ public class VillagerGiftSlot extends Slot {
                                 );
 
                                 container.removeItem(3, 1);
-//                                gift.shrink(1);
+
 
                             }
 
@@ -160,14 +169,14 @@ public class VillagerGiftSlot extends Slot {
 
                 WrittenBookContent content = gift.get(DataComponents.WRITTEN_BOOK_CONTENT);
                 Holder.Reference<Enchantment> enchantment = Social_contract.getEnchantmentRequest(content, villager.registryAccess());
-                if(enchantment != null){
+                if(enchantment != null && enchantment.is(EnchantmentTags.TRADEABLE)){
                     logger.info("accepting the request: {}", enchantment.value());
                     villager.playSound(SoundEvents.VILLAGER_CELEBRATE);
 
                     ItemStack requested = EnchantmentHelper.createBook(new EnchantmentInstance(enchantment, enchantment.value().getMaxLevel()));
                     villager.setAttached(AttachmentTypes.LAST_GIFTED_BOOK, requested);
                     container.removeItem(3, 1);
-//                    gift.shrink(gift.count());
+
                 }else{
                     villager.playSound(SoundEvents.VILLAGER_NO);
                 }
@@ -175,7 +184,16 @@ public class VillagerGiftSlot extends Slot {
                 return;
             }
 
+            if(gift.is(CustomItemTags.VILLAGER_DECORATION)){
+                List<ItemStack> decorationList = villager.getAttached(AttachmentTypes.DECORATION_LIST);
 
+                if(decorationList == null){
+                    decorationList = new ArrayList<>();
+                }
+
+                decorationList.add(gift.copy());
+                villager.setAttached(AttachmentTypes.DECORATION_LIST, decorationList);
+            }
 
             if(Villager.FOOD_POINTS.containsKey(gift.getItem())){
                 villager.getInventory().addItem(gift);
@@ -183,18 +201,10 @@ public class VillagerGiftSlot extends Slot {
 
             int amount = gift.count();
             container.removeItem(3, amount);
-//            gift.shrink(amount);
 
 
             Happiness.increaseHappiness(amount, villager, Happiness.HappinessType.GIFT);
 
-            VillagerAccessor accessor = (VillagerAccessor) villager;
-
-            if(accessor.social_contract$shouldIncreaseLevel()){
-                accessor.social_contract$setUpdateMerchantTimer(40);
-                accessor.social_contract$increaseProfessionLevelOnUpdate(true);
-
-            }
 
             if(amount > 0){
                 villager.playSound(SoundEvents.VILLAGER_CELEBRATE);
