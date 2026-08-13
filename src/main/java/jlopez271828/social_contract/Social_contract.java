@@ -2,28 +2,21 @@ package jlopez271828.social_contract;
 
 import jlopez271828.social_contract.mixin.VillagerAccessor;
 import jlopez271828.social_contract.networking.PacketHandlers;
-import jlopez271828.social_contract.old.CustomMemoryModuleType;
-import jlopez271828.social_contract.old.CustomMenuTypes;
 import jlopez271828.social_contract.types.*;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.illager.AbstractIllager;
-import net.minecraft.world.entity.monster.illager.Evoker;
-import net.minecraft.world.entity.monster.illager.Pillager;
-import net.minecraft.world.entity.monster.illager.Vindicator;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
@@ -39,7 +32,6 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -144,9 +136,8 @@ public class Social_contract implements ModInitializer {
 
 		LOGGER.info("Hello Fabric world!");
 
-        CustomMemoryModuleType.initialize();
-        CustomSensorTypes.initialize();
-        CustomMenuTypes.initialize();
+
+
         ExtraVillagerScreenWidgets.initialize();
         CustomReputationEventTypes.initialize();
         CustomActivities.initialize();
@@ -250,28 +241,28 @@ public class Social_contract implements ModInitializer {
      * @param offers a set of MerchantOffers
      * @return the constrained set of offers
      */
-    public static MerchantOffers constrainOffers(Villager villager, MerchantOffers offers){
-
-        MerchantOffers newOffers = new MerchantOffers();
-
+    public static int constrainOffers(Villager villager, MerchantOffers offers){
 
         int happiness = Happiness.getHappiness(villager);
         int homeScore = Happiness.getHappiness(villager, Happiness.HappinessType.ROOM);
         int level = villager.getVillagerData().level();
 
+        int toReturn = 0;
 
         if(happiness >= Social_contract.MIN_HAPPINESS_LEVEL_5){
-            return offers;
+            return offers.size();
         }
 
         //catching weird edge case
         if(offers.size() < 2){
-            return newOffers;
+            return 0;
         }
 
-        for(int i = 0; i < NUM_TRADES_LEVEL_1; i++){
-            newOffers.add(offers.get(newOffers.size()));
-        }
+//        for(int i = 0; i < NUM_TRADES_LEVEL_1; i++){
+//            newOffers.add(offers.get(newOffers.size()));
+//        }
+
+        toReturn += NUM_TRADES_LEVEL_1;
 
         // Many calls to offers.size(), I wonder if it would be quicker (but redundant) to simply keep our own size variable
         for(int i = 1; i < Math.min(MIN_HAPPINESS_LEVELS.length, level); i++){
@@ -283,21 +274,37 @@ public class Social_contract implements ModInitializer {
                             && homeScore >= Social_contract.MIN_ROOM_SCORES[i]
             )
             {
-                int tempSize = newOffers.size();
-                for(int j = 0; j < Social_contract.NUM_LEVEL_TRADES[i] - tempSize; j++){
-                    newOffers.add(offers.get(newOffers.size()));
-                }
+//                int tempSize = newOffers.size();
+//                for(int j = 0; j < Social_contract.NUM_LEVEL_TRADES[i] - tempSize; j++){
+//                    newOffers.add(offers.get(newOffers.size()));
+//                }
+
+                toReturn += NUM_LEVEL_TRADES[i];
 
             }else{
 
-                return newOffers;
+                return toReturn;
             }
 
         }
 
 
 
-        return newOffers;
+        return toReturn;
+
+    }
+
+    public static void constrainOffers(MerchantOffers offers, int numAvailable){
+
+        if(numAvailable <= 0){
+            return;
+        }
+
+        for(int i = numAvailable; i < offers.size(); i++){
+
+            offers.get(i - 1).setToOutOfStock();
+
+        }
 
     }
 

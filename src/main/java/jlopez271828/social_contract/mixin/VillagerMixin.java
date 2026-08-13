@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.EnchantmentTags;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -132,7 +134,21 @@ public abstract class VillagerMixin extends AbstractVillager  {
             Social_contract.scoreRoomWrapper((Villager) (Object) this);
             Happiness happiness = Happiness.getOrAttach((Villager) (Object) this);
             Map<Happiness.HappinessType, Integer> map = happiness.getMap();
-//            ServerPlayNetworking.send(sp, new ClientBoundVillagerInfoPayload(this.getId(), 0, Happiness.getHappiness((Villager) (Object) this)));
+
+
+            MerchantOffers offers = this.getOffers();
+            int numAvailableOffers = Social_contract.constrainOffers((Villager) (Object) this, offers);
+
+            if(numAvailableOffers > 0){
+                Social_contract.constrainOffers(offers, numAvailableOffers);
+            }
+
+            if(happiness.totalHappiness >= Social_contract.MIN_HAPPINESS_REQUEST){
+                for(MerchantOffer offer : offers){
+                    offer.setSpecialPriceDiff(-1 * Mth.ceil(0.20 * offer.getCostA().count()));
+                }
+            }
+
             ServerPlayNetworking.send(sp, new ClientBoundVillagerInfoPayload(
                     this.getId(),
                     0,
@@ -142,6 +158,7 @@ public abstract class VillagerMixin extends AbstractVillager  {
                     map.get(Happiness.HappinessType.TRADE),
                     map.get(Happiness.HappinessType.PAIN))
             );
+
         }
     }
 

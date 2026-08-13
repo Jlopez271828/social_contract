@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CloseDoorsTask2 extends Behavior<Villager> {
+public class CloseDoorsTask extends Behavior<Villager> {
 
     private int currentDoorIndex = 0;
     private List<GlobalPos> doorList;
@@ -41,7 +41,7 @@ public class CloseDoorsTask2 extends Behavior<Villager> {
     private static final int closeEnough = 2;
     private static final Logger logger = Social_contract.LOGGER;
 
-    public CloseDoorsTask2(){
+    public CloseDoorsTask(){
         super(
                 ImmutableMap.of(
                         MemoryModuleType.HOME, MemoryStatus.VALUE_PRESENT,

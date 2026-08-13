@@ -10,6 +10,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
@@ -27,17 +28,17 @@ import java.util.Optional;
 
 public class DecorateRoomTask extends Behavior<Villager> {
 
-    private boolean has_reached_home = false;
-    private boolean has_reach_decoration_spot = false;
-    private boolean can_stop = false;
 
-    private State STATE;
+
+    private State state;
     private GlobalPos home;
     private BlockPos decorationFloor;
     private BlockPos decorationSpot;
     private Direction direction;
     private BlockPos base;
 
+
+    //those states do be finite
     private enum State {
         MOVING_TO_HOME,
         FINDING_SPOT,
@@ -73,9 +74,9 @@ public class DecorateRoomTask extends Behavior<Villager> {
         Optional<GlobalPos> homeOpt = villager.getBrain().getMemory(MemoryModuleType.HOME);
         if(homeOpt.isPresent()){
             GlobalPos pos = homeOpt.get();
-            Path path = villager.getNavigation().createPath(pos.pos(), 2);
+//            Path path = villager.getNavigation().createPath(pos.pos(), 2);
 
-            return pos.dimension() == level.dimension() && path != null && path.canReach();
+            return pos.dimension() == level.dimension();
 
         }
 
@@ -86,42 +87,75 @@ public class DecorateRoomTask extends Behavior<Villager> {
 
     public boolean canStillUse(final ServerLevel level, final Villager villager, final long timestamp){
 
-        return !can_stop;
+        return this.state != State.FINISHED;
 
     }
 
     public void start(ServerLevel level, Villager villager, long timestamp){
 
-        Optional<GlobalPos> home = villager.getBrain().getMemory(MemoryModuleType.HOME);
-        this.has_reached_home = false;
-        this.has_reach_decoration_spot = false;
-        this.can_stop = false;
+
+        this.state = State.MOVING_TO_HOME;
         this.decorationFloor = null;
         this.decorationSpot = null;
         this.direction = null;
 
-        if(home.isPresent()){
-            this.home = home.get();
-        }else{
-            this.stop(level, villager, timestamp);
+        this.home = villager.getBrain().getMemory(MemoryModuleType.HOME).orElse(null);
+        if(this.home == null){
+            this.state = State.FINISHED;
+            return;
         }
 
         Social_contract.LOGGER.info("starting task");
-        villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.home.pos(), 0.5f, 3));
+        villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.home.pos(), 0.5f, 2));
 
     }
 
     public void tick(final ServerLevel level, final Villager villager, final long timestamp){
 
 
-        if(this.has_reached_home){
+        switch(this.state){
 
-            if(this.has_reach_decoration_spot){
+            case MOVING_TO_HOME -> {
+                if(villager.distanceToSqr(this.home.pos().getBottomCenter()) < 5){
+                    this.state = State.FINDING_SPOT;
+                } else if (villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).isEmpty()) {
+                    this.setTarget(villager, this.home.pos(), 2);
+                }
+            }
+
+            case FINDING_SPOT -> {
+                DecorationResult result = Social_contract.getDecorationSpot(villager.getEyePosition(), villager.getRandom(), level);
+                if(result == null || result.decorationSpot() == null || result.decorationFloor() == null || result.direction() == null){
+                    this.state = State.FINISHED;
+                    return;
+                }
+                this.decorationSpot = result.decorationSpot();
+                this.decorationFloor = result.decorationFloor();
+                this.direction = result.direction();
+                this.base = result.base();
+
+                Social_contract.LOGGER.info("found decoration floor at {}", decorationFloor);
+
+//                villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.decorationFloor, 0.5f, 1));
+                this.setTarget(villager, this.decorationFloor, 1);
+                this.state = State.DECORATING;
+            }
+
+            case MOVING_TO_SPOT -> {
+
+                if (villager.distanceToSqr(this.decorationFloor.getBottomCenter()) < 2.0) {
+                    this.state = State.DECORATING;
+                } else if (villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).isEmpty()) {
+                    this.setTarget(villager, this.decorationFloor, 1);
+                }
+            }
+
+            case DECORATING -> {
 
                 ItemStack decoration = getNextDecoration(villager);
 
                 if(decoration == null || decoration.is(Items.AIR)){
-                    this.stop(level, villager, timestamp);
+                    this.state = State.FINISHED;
                     return;
                 }
 
@@ -139,67 +173,22 @@ public class DecorateRoomTask extends Behavior<Villager> {
                     level.setBlock(decorationFloor, Block.byItem(decoration.getItem()).defaultBlockState(), 3);
                 }
 
-                this.can_stop = true;
+                villager.playSound(SoundEvents.VILLAGER_CELEBRATE);
 
-
-            }else {
-
-                if(villager.distanceToSqr(this.decorationFloor.getBottomCenter()) < 3){
-                    this.has_reach_decoration_spot = true;
-                }
+                this.state = State.FINISHED;
 
             }
 
-        }else{
-            if(villager.distanceToSqr(this.home.pos().getBottomCenter()) < 5){
-
-                DecorationResult result = Social_contract.getDecorationSpot(villager.getEyePosition(), villager.getRandom(), level);
-                if(result == null){
-                    this.stop(level, villager, timestamp);
-                    return;
-                }
-                this.decorationSpot = result.decorationSpot();
-                this.decorationFloor = result.decorationFloor();
-                this.direction = result.direction();
-                this.base = result.base();
-                if (this.decorationSpot == null) {
-                    Social_contract.LOGGER.info("could not find decoration spot");
-                    this.stop(level, villager, timestamp);
-                    return;
-                }
-
-                Social_contract.LOGGER.info("found decoration spot at {}", decorationSpot);
-
-                if (this.decorationFloor == null) {
-                    Social_contract.LOGGER.info("could not find floor below");
-                    this.stop(level, villager, timestamp);
-                    return;
-                }
-
-                Social_contract.LOGGER.info("found decoration floor at {}", decorationFloor);
-
-                Path path = villager.getNavigation().createPath(this.decorationFloor, 1);
-
-                if (path == null) {
-                    Social_contract.LOGGER.info("could not create path to decoration floor");
-                    this.stop(level, villager, timestamp);
-                    return;
-                }
-
-                villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.decorationFloor, 0.5f, 1));
-
-                this.has_reached_home = true;
-            }
         }
+
 
     }
 
     public void stop(final ServerLevel level, final Villager villager, final long timestamp){
 
         Social_contract.LOGGER.info("stopping task");
-        this.has_reached_home = false;
-        this.home = null;
         villager.removeAttached(AttachmentTypes.DECORATION_LIST);
+        villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 
     }
 
@@ -210,23 +199,29 @@ public class DecorateRoomTask extends Behavior<Villager> {
         if(decorationList != null ){
 
             if(!decorationList.isEmpty()){
-                ItemStack itemStack = decorationList.removeFirst();
+                try {
+                    ItemStack itemStack = decorationList.removeFirst();
 
-                if(itemStack != null){
 
-                    ItemStack newItemStack = itemStack.split(1);
+                    if (itemStack != null) {
 
-                    if(!itemStack.is(Items.AIR)){
-                        decorationList.addLast(itemStack);
-                        villager.setAttached(AttachmentTypes.DECORATION_LIST, decorationList);
+                        ItemStack newItemStack = itemStack.split(1);
+
+                        if (!itemStack.is(Items.AIR)) {
+                            decorationList.addLast(itemStack);
+                            villager.setAttached(AttachmentTypes.DECORATION_LIST, decorationList);
+                        }
+
+                        if (newItemStack.is(Items.AIR)) {
+                            return null;
+                        } else {
+                            return newItemStack;
+                        }
+
                     }
 
-                    if(newItemStack.is(Items.AIR)){
-                        return null;
-                    }else{
-                        return newItemStack;
-                    }
-
+                } catch (Exception e) {
+                    return null;
                 }
 
             }
@@ -236,6 +231,11 @@ public class DecorateRoomTask extends Behavior<Villager> {
 
         return null;
 
+    }
+
+    private void setTarget(Villager villager, BlockPos pos, int radius) {
+        // Keep the speed a bit higher (0.5f is standard, can be pushed to 0.6f if they are sluggish)
+        villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, 0.5f, radius));
     }
 
 

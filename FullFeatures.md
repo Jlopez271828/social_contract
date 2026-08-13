@@ -136,3 +136,5 @@ around.
     - The board will display missing requirements for festivals that Villagers are trying to produce.
 <br><br>
 12. A new type of ruin / dungeon could be added that requires a (willing) Villager to complete.
+<br><br>
+13. Child Villagers will trade cheap items such as sticks and string
