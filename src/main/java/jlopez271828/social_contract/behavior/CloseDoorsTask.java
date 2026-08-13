@@ -18,17 +18,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CloseDoorsTask extends Behavior<Villager> {
+public class CloseDoorsTask2 extends Behavior<Villager> {
 
     private int currentDoorIndex = 0;
     private List<GlobalPos> doorList;
+    private int timer = 0;
+    private GlobalPos currentTarget;
 
 
+    private State state;
+
+    private enum State {
+        CONFIGURE,
+        DELAY,
+        TARGETING,
+        WALKING_TO_DOOR,
+        FINISHED
+    }
+
+    private static final int BASEDELAY = 3 * 20;
     private static final int timeout = 30 * 20;
     private static final int closeEnough = 2;
     private static final Logger logger = Social_contract.LOGGER;
 
-    public CloseDoorsTask(){
+    public CloseDoorsTask2(){
         super(
                 ImmutableMap.of(
                         MemoryModuleType.HOME, MemoryStatus.VALUE_PRESENT,
@@ -39,12 +52,14 @@ public class CloseDoorsTask extends Behavior<Villager> {
 
     public boolean checkExtraStartConditions(ServerLevel level, Villager villager){
 
-        List<GlobalPos> doorList = villager.getAttached(AttachmentTypes.ROOM_DOORS);
-
         //In case the schedule hasn't properly updated
         if(level.getOverworldClockTime() < 13000){
             return false;
         }
+
+        List<GlobalPos> doorList = villager.getAttached(AttachmentTypes.ROOM_DOORS);
+
+
 
         if(doorList == null || doorList.isEmpty()){
             return false;
@@ -76,18 +91,15 @@ public class CloseDoorsTask extends Behavior<Villager> {
     }
 
     public boolean canStillUse(ServerLevel level, Villager villager, long timestamp){
-        return this.doorList != null && this.currentDoorIndex < doorList.size();
+        return this.state != State.FINISHED;
     }
 
     public void start(ServerLevel level, Villager villager, long timestamp){
 
-        if(villager.isSleeping()){
-            villager.stopSleeping();
-        }
-
-        this.currentDoorIndex = 0;
-        this.doorList = getOpenedDoors(level, villager.getAttachedOrElse(AttachmentTypes.ROOM_DOORS, List.of()));
-        this.targetNextDoor(level, villager);
+        //staggering so a whole village doesn't do this at once
+        this.timer = BASEDELAY + villager.getRandom().nextInt(0, 40);
+        this.currentDoorIndex = -1;
+        this.state = State.DELAY;
 
     }
 
@@ -101,46 +113,103 @@ public class CloseDoorsTask extends Behavior<Villager> {
     @Override
     protected void tick(ServerLevel level, Villager villager, long gameTime) {
 
-        GlobalPos targetDoorPos = doorList.get(this.currentDoorIndex);
+        switch (this.state){
 
-
-        if (!targetDoorPos.dimension().equals(level.dimension())
-                || villager.getNavigation().createPath(targetDoorPos.pos(), closeEnough) == null
-        ) {
-            this.currentDoorIndex++;
-            if (this.currentDoorIndex < doorList.size()) {
-                this.targetNextDoor(level, villager);
+            case DELAY -> {
+                if(timer > 0){
+                    timer--;
+                    return;
+                }else{
+                    this.state = State.CONFIGURE;
+                }
             }
-            return;
+
+            case CONFIGURE -> {
+                List<GlobalPos> temp = villager.getAttached(AttachmentTypes.ROOM_DOORS);
+
+                if(temp == null){
+                    this.state = State.FINISHED;
+                    return;
+                }
+
+                this.doorList = getOpenedDoors(level, temp);
+
+                if(this.doorList.isEmpty()){
+                    this.state = State.FINISHED;
+                    return;
+                }
+
+                if(villager.isSleeping()){
+                    villager.stopSleeping();
+                }
+
+                this.state = State.TARGETING;
+
+                return;
+
+            }
+
+            case TARGETING -> {
+
+                this.currentDoorIndex++;
+
+                if(this.currentDoorIndex < this.doorList.size()) {
+
+
+                    this.currentTarget = this.targetNextDoor(level, villager);
+
+                    if (this.currentTarget == null) {
+                        this.state = State.FINISHED;
+                        return;
+                    }
+
+                    if (!this.currentTarget.dimension().equals(level.dimension())) {
+                        return;
+                    }
+
+                    this.state = State.WALKING_TO_DOOR;
+
+                }else{
+                    this.state = State.FINISHED;
+                }
+
+            }
+
+            case WALKING_TO_DOOR -> {
+
+                double distanceSq = villager.distanceToSqr(this.currentTarget.pos().getBottomCenter());
+
+                if (distanceSq <= closeEnough * closeEnough + 0.8) {
+                    BlockState state = level.getBlockState(this.currentTarget.pos());
+                    if (state.getBlock() instanceof DoorBlock && state.getValue(DoorBlock.OPEN)) {
+
+                        ((DoorBlock) state.getBlock()).setOpen(villager, level, state, this.currentTarget.pos(), false);
+                    }
+
+                    this.state = State.TARGETING;
+
+                }
+
+
+            }
+
         }
 
-        double distanceSq = villager.distanceToSqr(targetDoorPos.pos().getBottomCenter());
-
-
-        if (distanceSq <= closeEnough * closeEnough) {
-            BlockState state = level.getBlockState(targetDoorPos.pos());
-            if (state.getBlock() instanceof DoorBlock && state.getValue(DoorBlock.OPEN)) {
-
-                ((DoorBlock) state.getBlock()).setOpen(villager, level, state, targetDoorPos.pos(), false);
-            }
-
-
-            this.currentDoorIndex++;
-            if (this.currentDoorIndex < doorList.size()) {
-                this.targetNextDoor(level, villager);
-            }
-        }
     }
 
-    public void targetNextDoor(ServerLevel level, Villager villager){
+    public GlobalPos targetNextDoor(ServerLevel level, Villager villager){
         GlobalPos target = this.doorList.get(this.currentDoorIndex);
         if(target == null){
-            return;
+            return null;
         }
+
+
         villager.getBrain().setMemory(
                 MemoryModuleType.WALK_TARGET,
                 new WalkTarget(target.pos(), 0.5f, closeEnough)
         );
+
+        return target;
     }
 
     public static List<GlobalPos> getOpenedDoors(ServerLevel level, final List<GlobalPos> original){
@@ -160,6 +229,5 @@ public class CloseDoorsTask extends Behavior<Villager> {
 
 
     }
-
 
 }
