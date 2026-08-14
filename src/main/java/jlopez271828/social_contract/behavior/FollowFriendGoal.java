@@ -21,6 +21,9 @@ public class FollowFriendGoal {
 
     private static Logger logger = Social_contract.LOGGER;
 
+    //TODO: reimplement this as a state machine
+    // I kinda hate this declarative builder
+
     public static OneShot<PathfinderMob> create(final float speedModifier,
                                                 final int closeEnoughDist,
                                                 final int tooFarDistance,
@@ -31,7 +34,7 @@ public class FollowFriendGoal {
                 (walktarget, cantReachSince) ->
                         (level, body, timestamp) -> {
 
-//            logger.info("starting follow goal");
+
             Player player = body.getAttached(AttachmentTypes.PLAYER_TO_FOLLOW);
             if(player == null){
                 body.getBrain().setActiveActivityIfPossible(Activity.IDLE);

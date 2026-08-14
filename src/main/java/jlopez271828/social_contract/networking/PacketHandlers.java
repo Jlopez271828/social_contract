@@ -1,6 +1,7 @@
 package jlopez271828.social_contract.networking;
 
 import jlopez271828.social_contract.Happiness;
+import jlopez271828.social_contract.SocialContractConfig;
 import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.VillagerGiftSlot;
 import jlopez271828.social_contract.mixin.VillagerAccessor;
@@ -62,7 +63,7 @@ public class PacketHandlers {
                         logger.info("reputation: {}", reputation);
 
                         // This button will also be a convenient way to force a room rescore.
-                        if(reputation >= Social_contract.MIN_FOLLOW_REPUTATION && Happiness.check(villager, Social_contract.MIN_FOLLOW_HAPPINESS, true, false)){
+                        if(reputation >= SocialContractConfig.MIN_FOLLOW_REPUTATION && Happiness.check(villager, SocialContractConfig.MIN_FOLLOW_HAPPINESS, true, false)){
 
 //                            logger.info("this player meets the requirements");
                             villager.playSound(SoundEvents.VILLAGER_CELEBRATE);

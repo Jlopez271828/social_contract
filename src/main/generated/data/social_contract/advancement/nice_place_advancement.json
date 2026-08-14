@@ -1,0 +1,22 @@
+{
+  "parent": "social_contract:root",
+  "criteria": {
+    "nice_place": {
+      "trigger": "social_contract:nice_place_criterion"
+    }
+  },
+  "display": {
+    "description": "Trade With a Villager with a room score of 500 or above",
+    "frame": "challenge",
+    "icon": {
+      "id": "minecraft:red_bed"
+    },
+    "title": "Nice Place"
+  },
+  "requirements": [
+    [
+      "nice_place"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

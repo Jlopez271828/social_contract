@@ -1,13 +1,16 @@
 package jlopez271828.social_contract;
 
+import jlopez271828.social_contract.criteria.CustomCriteria;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomItemTags;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MerchantContainer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -92,7 +95,7 @@ public class VillagerGiftSlot extends Slot {
                 }
 
                 // You can clone restricted enchantments with a librarian, however, that villager will need a very high happiness to do so.
-                if(!giftInfo.enchantment().is(EnchantmentTags.TRADEABLE) && !Happiness.check(villager, Social_contract.MIN_HAPPINESS_REQUEST)){
+                if(!giftInfo.enchantment().is(EnchantmentTags.TRADEABLE) && !Happiness.check(villager, SocialContractConfig.MIN_HAPPINESS_REQUEST)){
                     villager.playSound(SoundEvents.VILLAGER_NO);
                     return;
                 }
@@ -162,7 +165,7 @@ public class VillagerGiftSlot extends Slot {
 
                 }
 
-                if (!Happiness.check(villager, Social_contract.MIN_HAPPINESS_REQUEST)) {
+                if (!Happiness.check(villager, SocialContractConfig.MIN_HAPPINESS_REQUEST)) {
                     villager.playSound(SoundEvents.VILLAGER_NO);
                     return;
                 }
@@ -170,8 +173,14 @@ public class VillagerGiftSlot extends Slot {
                 WrittenBookContent content = gift.get(DataComponents.WRITTEN_BOOK_CONTENT);
                 Holder.Reference<Enchantment> enchantment = Social_contract.getEnchantmentRequest(content, villager.registryAccess());
                 if(enchantment != null && enchantment.is(EnchantmentTags.TRADEABLE)){
-                    logger.info("accepting the request: {}", enchantment.value());
+
                     villager.playSound(SoundEvents.VILLAGER_CELEBRATE);
+
+                    Player player = villager.getTradingPlayer();
+
+                    if(player instanceof ServerPlayer){
+                        CustomCriteria.SUCCESSFULL_REQUEST_CRITERION.trigger((ServerPlayer) player);
+                    }
 
                     ItemStack requested = EnchantmentHelper.createBook(new EnchantmentInstance(enchantment, enchantment.value().getMaxLevel()));
                     villager.setAttached(AttachmentTypes.LAST_GIFTED_BOOK, requested);
@@ -208,6 +217,11 @@ public class VillagerGiftSlot extends Slot {
 
             if(amount > 0){
                 villager.playSound(SoundEvents.VILLAGER_CELEBRATE);
+                Player player = villager.getTradingPlayer();
+                if(player instanceof ServerPlayer){
+                    CustomCriteria.GIVE_GIFT_CRITERION.trigger((ServerPlayer) player);
+                }
+
             }else{
                 villager.playSound(SoundEvents.VILLAGER_NO);
             }

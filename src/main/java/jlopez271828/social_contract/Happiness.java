@@ -1,20 +1,14 @@
 package jlopez271828.social_contract;
 
 import com.mojang.serialization.Codec;
+import jlopez271828.social_contract.criteria.CustomCriteria;
 import jlopez271828.social_contract.mixin.VillagerAccessor;
 import jlopez271828.social_contract.types.AttachmentTypes;
-import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.entity.ConversionParams;
-import net.minecraft.world.entity.ConversionType;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.monster.illager.AbstractIllager;
-import net.minecraft.world.entity.monster.illager.Pillager;
 import net.minecraft.world.entity.npc.villager.Villager;
-import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import org.jspecify.annotations.NonNull;
@@ -105,7 +99,7 @@ public class Happiness {
         }
 
         if(villager.level() instanceof ServerLevel serverLevel) {
-            if(happiness.totalHappiness >= Social_contract.MIN_HAPPINESS_REQUEST) {
+            if(happiness.totalHappiness >= SocialContractConfig.MIN_HAPPINESS_REQUEST) {
                 List<Player> players = serverLevel.getNearbyPlayers(TargetingConditions.forNonCombat(), villager, AABB.ofSize(villager.position(), 10, 5, 10));
                 if (!players.isEmpty()) {
                     for (Player player : players) {
@@ -188,8 +182,6 @@ public class Happiness {
 
         if(villager.level() instanceof ServerLevel serverLevel) {
             Social_contract.tryConvertVillager(villager, serverLevel, happiness.totalHappiness);
-        }else{
-            Social_contract.LOGGER.warn("for some reason this code is being ran on the client");
         }
 
 
@@ -271,8 +263,6 @@ public class Happiness {
         }
 
         Happiness happiness = villager.getAttached(AttachmentTypes.VILLAGER_HAPPINESS);
-
-        Social_contract.LOGGER.info("happiness for this check: {}", happiness);
 
         if(happiness == null){
             return 0;
@@ -366,8 +356,6 @@ public class Happiness {
 
         Happiness happiness = villager.getAttached(AttachmentTypes.VILLAGER_HAPPINESS);
 
-        Social_contract.LOGGER.debug("Happiness for this check: {}", happiness);
-
         if (happiness == null) {
             return false;
         }
@@ -414,9 +402,9 @@ public class Happiness {
     public enum HappinessType implements StringRepresentable {
 
         PAIN(0, -999, "pain"),
-        TRADE(Social_contract.MAX_TRADE_HAPPINESS, 0, "trade"),
-        GIFT(Social_contract.MAX_GIFT_HAPPINESS, 0, "gift"),
-        ROOM(Social_contract.MAX_ROOM_HAPPINESS, 0, "room");
+        TRADE(SocialContractConfig.MAX_TRADE_HAPPINESS, 0, "trade"),
+        GIFT(SocialContractConfig.MAX_GIFT_HAPPINESS, 0, "gift"),
+        ROOM(SocialContractConfig.MAX_ROOM_HAPPINESS, 0, "room");
 
 
         public final int maxValue;

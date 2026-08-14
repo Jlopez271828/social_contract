@@ -39,7 +39,6 @@ public class CloseDoorsTask extends Behavior<Villager> {
     private static final int BASEDELAY = 3 * 20;
     private static final int timeout = 30 * 20;
     private static final int closeEnough = 2;
-    private static final Logger logger = Social_contract.LOGGER;
 
     public CloseDoorsTask(){
         super(

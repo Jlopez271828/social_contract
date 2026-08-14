@@ -2,7 +2,7 @@ package jlopez271828.social_contract.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import jlopez271828.social_contract.Happiness;
-import jlopez271828.social_contract.Social_contract;
+import jlopez271828.social_contract.SocialContractConfig;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.npc.villager.Villager;
@@ -20,7 +20,7 @@ public class VillagerSubMixin extends LivingEntityMixin {
     @Override
     protected void overrideForVillager(ServerLevel level, DamageSource source, float dmg, Operation<Void> original) {
         original.call(level, source, dmg);
-        Happiness.decreaseHappiness((int) (Social_contract.HAPPINESS_LOSS_DMG * dmg), (Villager) (Object) this);
+        Happiness.decreaseHappiness((int) (SocialContractConfig.HAPPINESS_LOSS_DMG * dmg), (Villager) (Object) this);
 
     }
 

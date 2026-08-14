@@ -1,5 +1,7 @@
 package jlopez271828.social_contract;
 
+import jlopez271828.SocialContractGamerules;
+import jlopez271828.social_contract.criteria.CustomCriteria;
 import jlopez271828.social_contract.mixin.VillagerAccessor;
 import jlopez271828.social_contract.networking.PacketHandlers;
 import jlopez271828.social_contract.types.*;
@@ -43,99 +45,14 @@ import java.util.*;
 public class Social_contract implements ModInitializer {
 	public static final String MOD_ID = "social_contract";
 
-    public static final float ENCHANTED_BOOK_MULTIPLIER = 0.05f;
-    public static final int ENCHANTED_BOOK_MAX_USES = 12;
-
-    public static final int ENCHANTMENT_COST_A = 32;
-    public static final int ENCHANTMENT_COST_B = 25;
-
-    public static final float DISCOUNT = 0.80f;
-
-    public static final int[] xpPerLevel = {1, 5, 10, 15, 30};
-
-    public static final int MAX_ROOM_SIZE = 500;
-    public static final int MIN_GOOD_SCORE = 4;
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 
-
-    //this should be in ticks.
-    public static final long ROOM_SCORE_COOLDOWN = 40 * 20;
-
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static final int MIN_FOLLOW_REPUTATION = 10;
-    public static final int MIN_FOLLOW_HAPPINESS = 20;
-    public static final int MIN_BREED_HAPPINESS = 60;
-
-
-    // TODO : rebalance these
-    //Minimum happiness values for a villager to level up
-    public static final int MIN_HAPPINESS_LEVEL_2 = 20;
-    public static final int MIN_HAPPINESS_LEVEL_3 = 50;
-    public static final int MIN_HAPPINESS_LEVEL_4 = 90;
-    public static final int MIN_HAPPINESS_LEVEL_5 = 150;
-
-    public static final int[] MIN_HAPPINESS_LEVELS = {
-            0,
-            MIN_HAPPINESS_LEVEL_2,
-            MIN_HAPPINESS_LEVEL_3,
-            MIN_HAPPINESS_LEVEL_4,
-            MIN_HAPPINESS_LEVEL_5
-    };
-
-    public static final int MIN_HAPPINESS_DISCOUNT = 200;
-    public static final int MIN_HAPPINESS_REQUEST = 300;
-
-    public static final int HAPPINESS_FOR_ILLAGER = -660 - 6;
-
-    //Happiness values for various events
-    public static final int HAPPINESS_FOR_TRADE = 2;
-    public static final int HAPPINESS_LOSS_NEARBY_DEATH = 80;
-    public static final int HAPPINESS_LOSS_DMG = 15; //per heart
-
-    public static final int MAX_GIFT_HAPPINESS = 25;
-    public static final int MAX_ROOM_HAPPINESS = MAX_ROOM_SIZE;
-    public static final int MAX_TRADE_HAPPINESS = 25;
-
-
-    public static final int MIN_ROOM_SCORE_LEVEL_2 = 4;
-    public static final int MIN_ROOM_SCORE_LEVEL_3 = 9;
-    public static final int MIN_ROOM_SCORE_LEVEL_4 = 20;
-    public static final int MIN_ROOM_SCORE_LEVEL_5 = 50;
-
-    public static final int[] MIN_ROOM_SCORES = {
-            0,
-            MIN_ROOM_SCORE_LEVEL_2,
-            MIN_ROOM_SCORE_LEVEL_3,
-            MIN_ROOM_SCORE_LEVEL_4,
-            MIN_ROOM_SCORE_LEVEL_5
-    };
-
-    public static final int DEATH_REPORT_RADIUS = 50;
-
-    //Maybe I'll use these maybe not
-    public static final int NUM_TRADES_LEVEL_1 = 2;
-    public static final int NUM_TRADES_LEVEL_2 = 4;
-    public static final int NUM_TRADES_LEVEL_3 = 6;
-    public static final int NUM_TRADES_LEVEL_4 = 8;
-    public static final int NUM_TRADES_LEVEL_5 = 10;
-
-    public static final int[] NUM_LEVEL_TRADES = {
-            NUM_TRADES_LEVEL_1,
-            NUM_TRADES_LEVEL_2,
-            NUM_TRADES_LEVEL_3,
-            NUM_TRADES_LEVEL_4,
-            NUM_TRADES_LEVEL_5
-    };
-
-
-    public static final int MAX_USED_HAPPINESS = MIN_HAPPINESS_REQUEST;
-
-	@Override
+    @Override
 	public void onInitialize() {
 
 
-		LOGGER.info("Hello Fabric world!");
-
+		LOGGER.info("Social Contract Initializing");
 
 
         ExtraVillagerScreenWidgets.initialize();
@@ -145,9 +62,7 @@ public class Social_contract implements ModInitializer {
         PacketHandlers.initialize();
         AttachmentTypes.initialize();
         CustomCriteria.initialize();
-
-
-
+        SocialContractGamerules.initialize();
 
 
 	}
@@ -191,7 +106,8 @@ public class Social_contract implements ModInitializer {
 
                 villager.removeAttached(AttachmentTypes.LAST_GIFTED_BOOK);
 
-                offers.add(new MerchantOffer(new ItemCost(Items.EMERALD, cost), Optional.of(new ItemCost(Items.BOOK)), toGive, ENCHANTED_BOOK_MAX_USES, getXpForTradeLevel(villager.getVillagerData().level()), ENCHANTED_BOOK_MULTIPLIER));
+                offers.add(new MerchantOffer(new ItemCost(Items.EMERALD, cost), Optional.of(new ItemCost(Items.BOOK)), toGive, SocialContractConfig.ENCHANTED_BOOK_MAX_USES, getXpForTradeLevel(villager.getVillagerData().level()), SocialContractConfig.ENCHANTED_BOOK_MULTIPLIER));
+
                 return true;
 
 
@@ -228,7 +144,7 @@ public class Social_contract implements ModInitializer {
 
             int cost = decideCost(holder, enchantLevel, villager.getRandom());
 
-            offers.add(new MerchantOffer(new ItemCost(Items.EMERALD, cost), Optional.of(new ItemCost(Items.BOOK)), toGive, ENCHANTED_BOOK_MAX_USES, getXpForTradeLevel(villager.getVillagerData().level()), ENCHANTED_BOOK_MULTIPLIER));
+            offers.add(new MerchantOffer(new ItemCost(Items.EMERALD, cost), Optional.of(new ItemCost(Items.BOOK)), toGive, SocialContractConfig.ENCHANTED_BOOK_MAX_USES, getXpForTradeLevel(villager.getVillagerData().level()), SocialContractConfig.ENCHANTED_BOOK_MULTIPLIER));
 
         }
 
@@ -249,7 +165,7 @@ public class Social_contract implements ModInitializer {
 
         int toReturn = 0;
 
-        if(happiness >= Social_contract.MIN_HAPPINESS_LEVEL_5){
+        if(happiness >= SocialContractConfig.MIN_HAPPINESS_LEVEL_5){
             return offers.size();
         }
 
@@ -258,28 +174,21 @@ public class Social_contract implements ModInitializer {
             return 0;
         }
 
-//        for(int i = 0; i < NUM_TRADES_LEVEL_1; i++){
-//            newOffers.add(offers.get(newOffers.size()));
-//        }
 
-        toReturn += NUM_TRADES_LEVEL_1;
+        toReturn += SocialContractConfig.NUM_TRADES_LEVEL_1;
 
         // Many calls to offers.size(), I wonder if it would be quicker (but redundant) to simply keep our own size variable
-        for(int i = 1; i < Math.min(MIN_HAPPINESS_LEVELS.length, level); i++){
+        for(int i = 1; i < Math.min(SocialContractConfig.MIN_HAPPINESS_LEVELS.length, level); i++){
 
 
             if(
-                    happiness >= Social_contract.MIN_HAPPINESS_LEVELS[i]
-                            && offers.size() >= Social_contract.NUM_LEVEL_TRADES[i]
-                            && homeScore >= Social_contract.MIN_ROOM_SCORES[i]
+                    happiness >= SocialContractConfig.MIN_HAPPINESS_LEVELS[i]
+                            && offers.size() >= SocialContractConfig.NUM_LEVEL_TRADES[i]
+                            && homeScore >= SocialContractConfig.MIN_ROOM_SCORES[i]
             )
             {
-//                int tempSize = newOffers.size();
-//                for(int j = 0; j < Social_contract.NUM_LEVEL_TRADES[i] - tempSize; j++){
-//                    newOffers.add(offers.get(newOffers.size()));
-//                }
 
-                toReturn += NUM_LEVEL_TRADES[i];
+                toReturn = SocialContractConfig.NUM_LEVEL_TRADES[i];
 
             }else{
 
@@ -302,7 +211,7 @@ public class Social_contract implements ModInitializer {
 
         for(int i = numAvailable; i < offers.size(); i++){
 
-            offers.get(i - 1).setToOutOfStock();
+            offers.get(i).setToOutOfStock();
 
         }
 
@@ -374,7 +283,12 @@ public class Social_contract implements ModInitializer {
      */
     public static void scoreRoomWrapper(Villager villager, boolean override){
 
+
         Level level = villager.level();
+
+        if(! (level instanceof ServerLevel)){
+            return;
+        }
 
         long currentTime = level.getGameTime();
 
@@ -384,15 +298,15 @@ public class Social_contract implements ModInitializer {
             last_score_time = 0L;
         }
 
-        if((override || currentTime - last_score_time > ROOM_SCORE_COOLDOWN) && level instanceof ServerLevel serverLevel) {
+        if(override || currentTime - last_score_time > ((ServerLevel) level).getGameRules().get(SocialContractGamerules.ROOM_RESCORE_COOLDOWN) * 20L) {
 
 
-            LOGGER.info("begging score room task\n");
+
             Brain<?> brain = villager.getBrain();
             GlobalPos memory = brain.getMemory(MemoryModuleType.HOME).orElse(null);
             if (memory != null && memory.dimension() == level.dimension() ) {
 
-                ScoreResult scoreResult = Scoring.scoreRoom(memory.pos(), serverLevel);
+                ScoreResult scoreResult = Scoring.scoreRoom(memory.pos(), (ServerLevel) level);
                 if(scoreResult == null){
                     Happiness.setHappiness(0, villager, Happiness.HappinessType.ROOM);
                     villager.removeAttached(AttachmentTypes.ROOM_DOORS);
@@ -402,12 +316,8 @@ public class Social_contract implements ModInitializer {
 
                 int score = scoreResult.score();
 
-                LOGGER.info("room scored with a score of {}", score);
-
                 Happiness.setHappiness(score, villager, Happiness.HappinessType.ROOM);
 
-                // TODO: I ran into looping issues because I tried to put the logic of setting the update trades flag inside of
-                // setHappiness before setting the LAST_ROOM_SCORE_TIME attachment.
                 villager.setAttached(AttachmentTypes.LAST_ROOM_SCORE_TIME, level.getGameTime());
                 villager.setAttached(AttachmentTypes.ROOM_DOORS, scoreResult.doorList());
 
@@ -420,7 +330,7 @@ public class Social_contract implements ModInitializer {
                 }
 
 
-                if (score > MIN_GOOD_SCORE) {
+                if (score > SocialContractConfig.MIN_GOOD_SCORE) {
                     level.broadcastEntityEvent(villager, (byte) 14);
 
                 } else {
@@ -428,14 +338,14 @@ public class Social_contract implements ModInitializer {
                 }
 
             } else {
-                LOGGER.info("No home memory");
                 Happiness.setHappiness(0, villager, Happiness.HappinessType.ROOM);
                 level.broadcastEntityEvent(villager, (byte) 13);
             }
 
-        }else{
-            LOGGER.info("A sufficient time has not passed since last room score for this Villager");
         }
+//        else{
+//            LOGGER.info("A sufficient time has not passed since last room score for this Villager");
+//        }
 
     }
 
@@ -474,15 +384,15 @@ public class Social_contract implements ModInitializer {
 
     public static int getXpForTradeLevel(int level){
 
-        if(level >= xpPerLevel.length){
-            return xpPerLevel[xpPerLevel.length - 1];
+        if(level >= SocialContractConfig.xpPerLevel.length){
+            return SocialContractConfig.xpPerLevel[SocialContractConfig.xpPerLevel.length - 1];
         }
 
         if(level < 0){
-            return xpPerLevel[0];
+            return SocialContractConfig.xpPerLevel[0];
         }
 
-        return xpPerLevel[level];
+        return SocialContractConfig.xpPerLevel[level];
 
     }
 
@@ -498,13 +408,13 @@ public class Social_contract implements ModInitializer {
         int happiness = Happiness.getHappiness(villager);
         int level = villager.getVillagerData().level();
 
-        if(happiness >= MIN_HAPPINESS_LEVELS[MIN_HAPPINESS_LEVELS.length - 1] && level >= MIN_HAPPINESS_LEVELS.length){
+        if(happiness >= SocialContractConfig.MIN_HAPPINESS_LEVELS[SocialContractConfig.MIN_HAPPINESS_LEVELS.length - 1] && level >= SocialContractConfig.MIN_HAPPINESS_LEVELS.length){
             return enchantment.getMaxLevel();
         }
 
-        for(int i = MIN_HAPPINESS_LEVELS.length - 2; i >= 0 && i >= level - 1; i--){
+        for(int i = SocialContractConfig.MIN_HAPPINESS_LEVELS.length - 2; i >= 0 && i >= level - 1; i--){
 
-            if(happiness >= MIN_HAPPINESS_LEVELS[i] && level >= i + 1){
+            if(happiness >= SocialContractConfig.MIN_HAPPINESS_LEVELS[i] && level >= i + 1){
 
                 return i + 1;
 
@@ -543,7 +453,6 @@ public class Social_contract implements ModInitializer {
      */
     public static void changeOfferResult(MerchantOffers offers, int index, ItemStack newResult){
         MerchantOffer offer = offers.get(index);
-        ItemStack result = offer.getResult();
         offers.remove(index);
         offers.add(
                 index,
@@ -573,11 +482,11 @@ public class Social_contract implements ModInitializer {
 
     }
 
-    public static AbstractIllager tryConvertVillager(Villager villager, ServerLevel level, int happiness){
+    public static void tryConvertVillager(Villager villager, ServerLevel level, int happiness){
 
 
 
-        if(happiness < Social_contract.HAPPINESS_FOR_ILLAGER && villager.isAlive()){
+        if(happiness < SocialContractConfig.HAPPINESS_FOR_ILLAGER && villager.isAlive()){
 
             Holder<VillagerProfession> professionHolder = villager.getVillagerData().profession();
 
@@ -586,19 +495,14 @@ public class Social_contract implements ModInitializer {
 
             if(professionHolder.is(VillagerProfession.LIBRARIAN) || professionHolder.is(VillagerProfession.CLERIC)){
                 entityType = EntityType.EVOKER;
-//                illager2 = EntityType.EVOKER.create(level, EntitySpawnReason.CONVERSION);
             }else if (professionHolder.is(VillagerProfession.FLETCHER)){
                 entityType = EntityType.PILLAGER;
-//                illager2 = EntityType.PILLAGER.create(level, EntitySpawnReason.CONVERSION);
             }else{
                 entityType = EntityType.VINDICATOR;
-//                illager2 = EntityType.VINDICATOR.create(level, EntitySpawnReason.CONVERSION);
             }
 
             ((VillagerAccessor) villager).social_contract$releaseAllPois();
 
-//            Vec3 pos = villager.position();
-//            Vec3 lookAngle = villager.getLookAngle();
 
             AbstractIllager illager = villager.convertTo(entityType, new ConversionParams(ConversionType.SINGLE, false, false, null), mob -> {});
             if(illager != null) {
@@ -613,25 +517,10 @@ public class Social_contract implements ModInitializer {
                         }
                     }
                 }
-                return illager;
             }
-
-//            villager.remove(Entity.RemovalReason.DISCARDED);
-//            if(illager2 != null){
-//
-//                illager2.setPos(pos);
-//
-//                ValueOutput output = new TagValueOutput
-//
-//                illager2.saveWithoutId(nbt);
-//
-//
-//            }
 
 
         }
-
-        return null;
 
 
     }
@@ -654,10 +543,14 @@ public class Social_contract implements ModInitializer {
     }
 
 
-
+    /**
+     * Casts a virtual 'ray', gets the blocks along its path, returns once one of those blocks are solid.
+     * @param start the block to start the ray from
+     * @param ang the angle of the ray
+     * @param level the level the ray exists in
+     * @return A DecorationResult record containing the air block before the solid block, the solid block, the floor beneath the air block.
+     */
     public static DecorationResult getPaintingSpot(final Vec3 start, double ang, ServerLevel level){
-
-
 
         double dirX = -1 * Math.sin(ang);
         double dirZ = Math.cos(ang);

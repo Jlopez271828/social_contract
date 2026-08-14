@@ -1,4 +1,4 @@
-package jlopez271828.social_contract;
+package jlopez271828.social_contract.criteria;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.advancements.criterion.ContextAwarePredicate;

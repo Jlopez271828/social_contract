@@ -1,0 +1,21 @@
+{
+  "parent": "social_contract:root",
+  "criteria": {
+    "gave_gift": {
+      "trigger": "social_contract:give_gift_criterion"
+    }
+  },
+  "display": {
+    "description": "Give a Villager a Gift",
+    "icon": {
+      "id": "minecraft:poppy"
+    },
+    "title": "The Whole Thing's Wrapped With A Bow"
+  },
+  "requirements": [
+    [
+      "gave_gift"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

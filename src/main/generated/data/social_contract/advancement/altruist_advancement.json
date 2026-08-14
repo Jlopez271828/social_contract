@@ -1,5 +1,5 @@
 {
-  "parent": "social_contract:root",
+  "parent": "social_contract:give_gift_advancement",
   "criteria": {
     "altruist": {
       "trigger": "social_contract:altruist_criterion"
@@ -11,7 +11,7 @@
     "icon": {
       "id": "minecraft:emerald"
     },
-    "title": "Altriust"
+    "title": "Altruist"
   },
   "requirements": [
     [

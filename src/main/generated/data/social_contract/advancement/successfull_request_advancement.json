@@ -1,0 +1,22 @@
+{
+  "parent": "social_contract:give_gift_advancement",
+  "criteria": {
+    "successfully_requested": {
+      "trigger": "social_contract:successfull_request_criterion"
+    }
+  },
+  "display": {
+    "description": "Successfully make a Librarian trade a requested Enchantment",
+    "frame": "goal",
+    "icon": {
+      "id": "minecraft:writable_book"
+    },
+    "title": "I'll Consider It"
+  },
+  "requirements": [
+    [
+      "successfully_requested"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

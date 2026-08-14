@@ -1,7 +1,7 @@
 package jlopez271828.social_contract.mixin;
 
 import jlopez271828.social_contract.Happiness;
-import jlopez271828.social_contract.Social_contract;
+import jlopez271828.social_contract.SocialContractConfig;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.behavior.VillagerMakeLove;
 import net.minecraft.world.entity.npc.villager.Villager;
@@ -19,7 +19,7 @@ public class VillagerMakeLoveMixin {
     @Inject(method = "tryToGiveBirth", at = @At("HEAD"), cancellable = true)
     private void checkBreedingRequirements(ServerLevel level, Villager body, Villager target, CallbackInfo ci){
 
-        if(!Happiness.check(body, Social_contract.MIN_BREED_HAPPINESS, false, true) || !Happiness.check(target, Social_contract.MIN_BREED_HAPPINESS, false, true)){
+        if(!Happiness.check(body, SocialContractConfig.MIN_BREED_HAPPINESS, false, true) || !Happiness.check(target, SocialContractConfig.MIN_BREED_HAPPINESS, false, true)){
             level.broadcastEntityEvent(target, (byte)13);
             level.broadcastEntityEvent(body, (byte)13);
             ci.cancel();

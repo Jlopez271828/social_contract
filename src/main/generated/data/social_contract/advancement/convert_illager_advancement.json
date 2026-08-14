@@ -6,13 +6,13 @@
     }
   },
   "display": {
-    "description": "Push A Villager too far",
+    "description": "Push a Villager too far",
     "frame": "challenge",
     "hidden": true,
     "icon": {
       "id": "minecraft:arrow"
     },
-    "title": "Don't come to the village tomorrow"
+    "title": "Don't Come To The Village Tomorrow"
   },
   "requirements": [
     [

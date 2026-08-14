@@ -1,12 +1,15 @@
 {
   "criteria": {
+    "gave_gift": {
+      "trigger": "social_contract:give_gift_criterion"
+    },
     "traded": {
       "trigger": "minecraft:villager_trade"
     }
   },
   "display": {
     "announce_to_chat": false,
-    "background": "social_contract:villager_face.png",
+    "background": "social_contract:villager_face",
     "description": "Interact With Villagers",
     "icon": {
       "id": "minecraft:bell"
@@ -16,7 +19,8 @@
   },
   "requirements": [
     [
-      "traded"
+      "traded",
+      "gave_gift"
     ]
   ],
   "sends_telemetry_event": true

@@ -78,15 +78,17 @@
 21. Villagers can be gifted decorations
     - Villagers that have decorations will try to place them inside of their room.
     - Currently, decorations include Paintings and Pots.
+<br><br>
+
+22. Villagers will give a flat 20% discount on trades once they reach a certain happiness
+<br><br>
+23. Villagers will not wonder too far from their Beds, if they have one.
 
 
 # Not Implemented
 
-1. Villagers will give discounts on goods if they reach a certain Happiness.
-2. Villagers should not pathfind to fall 2 blocks or more.
-3. Villagers can interact with jukeboxes.
-   - Villagers that have been given music discs will play them occasionally 
-4. If a villager has a home, limit how far it can wonder from it.
+1. Villagers should not pathfind to fall 2 blocks or more.
+
 
 # Planned for the future
 1. The scoring algorithm will be changed from a naive flood fill to a more advanced algorithm.
@@ -106,6 +108,7 @@ up to the Player to create them.
 around. 
     - Villager Lights that are placed will eventually burn out unless interacted with. 
     - Villager's will interact with these lights, looking at them, and occasionally re-lighting them.
+    - The Villager Lights will Burn Zombies who come near
 <br><br>
 4. Traits will be added to Villagers, such as courage, weirdness.
     - Courage can be increased by gifting Villagers weapons
@@ -138,3 +141,5 @@ around.
 12. A new type of ruin / dungeon could be added that requires a (willing) Villager to complete.
 <br><br>
 13. Child Villagers will trade cheap items such as sticks and string
+<br><br>
+14. Villagers can be gifted music discs and interact with jukeboxes.

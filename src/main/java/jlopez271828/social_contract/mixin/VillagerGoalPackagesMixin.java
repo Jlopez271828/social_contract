@@ -44,19 +44,7 @@ public class VillagerGoalPackagesMixin {
     @ModifyReturnValue(method = "getRestPackage", at = @At("RETURN"))
     private static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> addCustomRestGoals(ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> original){
 
-        Social_contract.LOGGER.info("injecting close doors task");
-
         List<Pair<Integer, ? extends BehaviorControl<? super Villager>>> temp = new ArrayList<>(original);
-
-        //this is done to make sure that Villagers go to their bed first before closing all the doors, prevent them from
-        // essentially locking themselves out of their own room.
-//        for(int i = 1; i < original.size(); i++){
-//
-//            Pair<Integer, ? extends  BehaviorControl<? super Villager>> pair = original.get(i);
-//
-//            temp.add(Pair.of(pair.getFirst() + 1, pair.getSecond()));
-//
-//        }
 
         temp.addLast(Pair.of(4, new CloseDoorsTask()));
 

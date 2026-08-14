@@ -21,7 +21,7 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +32,11 @@ public class DecorateRoomTask extends Behavior<Villager> {
 
     private State state;
     private GlobalPos home;
+    private Vec3 homeVec;
     private BlockPos decorationFloor;
     private BlockPos decorationSpot;
+    private BlockPos lootSpot;
+    private Vec3 lookSpotVec;
     private Direction direction;
     private BlockPos base;
 
@@ -41,11 +44,13 @@ public class DecorateRoomTask extends Behavior<Villager> {
     //those states do be finite
     private enum State {
         MOVING_TO_HOME,
+        MOVING_TO_LOOK_SPOT,
         FINDING_SPOT,
-        MOVING_TO_SPOT,
+        MOVING_TO_DECORATION_SPOT,
         DECORATING,
         FINISHED
     }
+
 
     public DecorateRoomTask(){
         super(
@@ -74,7 +79,6 @@ public class DecorateRoomTask extends Behavior<Villager> {
         Optional<GlobalPos> homeOpt = villager.getBrain().getMemory(MemoryModuleType.HOME);
         if(homeOpt.isPresent()){
             GlobalPos pos = homeOpt.get();
-//            Path path = villager.getNavigation().createPath(pos.pos(), 2);
 
             return pos.dimension() == level.dimension();
 
@@ -98,6 +102,9 @@ public class DecorateRoomTask extends Behavior<Villager> {
         this.decorationFloor = null;
         this.decorationSpot = null;
         this.direction = null;
+        this.lootSpot = null;
+        this.lookSpotVec = null;
+        this.homeVec = null;
 
         this.home = villager.getBrain().getMemory(MemoryModuleType.HOME).orElse(null);
         if(this.home == null){
@@ -105,7 +112,8 @@ public class DecorateRoomTask extends Behavior<Villager> {
             return;
         }
 
-        Social_contract.LOGGER.info("starting task");
+        this.homeVec = this.home.pos().getBottomCenter();
+
         villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.home.pos(), 0.5f, 2));
 
     }
@@ -116,11 +124,34 @@ public class DecorateRoomTask extends Behavior<Villager> {
         switch(this.state){
 
             case MOVING_TO_HOME -> {
-                if(villager.distanceToSqr(this.home.pos().getBottomCenter()) < 5){
-                    this.state = State.FINDING_SPOT;
+
+                double distanceSq = villager.distanceToSqr(this.homeVec);
+                if(distanceSq < 49 && distanceSq > 40){
+                    this.lookSpotVec = villager.position();
+                    return;
+
+                }else if (villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).isEmpty()) {
+                    this.setTarget(villager, this.home.pos(), 2);
+                    return;
+                }
+
+                if(distanceSq < 5){
+                    villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.lookSpotVec, 0.5f, 1));
+                    this.state = State.MOVING_TO_LOOK_SPOT;
                 } else if (villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).isEmpty()) {
                     this.setTarget(villager, this.home.pos(), 2);
                 }
+            }
+
+            case MOVING_TO_LOOK_SPOT -> {
+
+                if(villager.distanceToSqr(this.lookSpotVec) < 1.2){
+                    this.state = State.FINDING_SPOT;
+                }else if(villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).isEmpty()){
+                    villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.lookSpotVec, 0.5f, 1));
+                }
+
+
             }
 
             case FINDING_SPOT -> {
@@ -134,14 +165,11 @@ public class DecorateRoomTask extends Behavior<Villager> {
                 this.direction = result.direction();
                 this.base = result.base();
 
-                Social_contract.LOGGER.info("found decoration floor at {}", decorationFloor);
-
-//                villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.decorationFloor, 0.5f, 1));
                 this.setTarget(villager, this.decorationFloor, 1);
-                this.state = State.DECORATING;
+                this.state = State.MOVING_TO_DECORATION_SPOT;
             }
 
-            case MOVING_TO_SPOT -> {
+            case MOVING_TO_DECORATION_SPOT -> {
 
                 if (villager.distanceToSqr(this.decorationFloor.getBottomCenter()) < 2.0) {
                     this.state = State.DECORATING;
@@ -163,7 +191,6 @@ public class DecorateRoomTask extends Behavior<Villager> {
                     Optional<Holder.Reference<PaintingVariant>> paintingOpt = level.registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT).getRandom(villager.getRandom());
                     if(paintingOpt.isPresent()){
                         Holder<PaintingVariant> holder = paintingOpt.get();
-//                        Painting painting = new Painting(level, this.decorationSpot, this.direction, holder);
                         Optional<Painting> painting = Painting.create(level, this.decorationSpot, this.direction);
                         if(painting.isPresent()) {
                             level.addFreshEntity(painting.get());
@@ -220,7 +247,8 @@ public class DecorateRoomTask extends Behavior<Villager> {
 
                     }
 
-                } catch (Exception e) {
+                } catch (Exception e) { // weird things can happen when the game closes in the middle of this task running
+                    // where the list gets treated as immutable, this catches it
                     return null;
                 }
 

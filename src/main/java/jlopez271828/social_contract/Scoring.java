@@ -1,5 +1,6 @@
 package jlopez271828.social_contract;
 
+import jlopez271828.SocialContractGamerules;
 import jlopez271828.social_contract.mixin.LightingAccessor;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import net.minecraft.core.BlockPos;
@@ -57,36 +58,29 @@ public abstract class Scoring {
         //if we start on the bed, we might get weird logic pertaining to solid objects.
         queue.add(start.above());
 
+        final int max_room_size = level.getGameRules().get(SocialContractGamerules.MAX_ROOM_VOLUME_GAMERULE);
+
+
+
         BlockPos current;
-        while(count < Social_contract.MAX_ROOM_SIZE && !queue.isEmpty()){
+        while(count < max_room_size && !queue.isEmpty()){
 
-
-            if(count == 400){
-                logger.info("400 blocks checked");
-            }
-
-            if(count == 480){
-                logger.info("480 blocks checked");
-            }
 
             current = queue.remove();
 
-//            logger.info("current block is {}", current.toString());
+
 
             if(visited.contains(current)){
-//                logger.info("has been visited");
                 continue;
             }
 
             if(isSolid(current, level, attachedDoors)){
-//                logger.info("is solid");
 
                 visited.add(current);
 
                 BlockState state = level.getBlockState(current);
 
                 if(state.getBlock() instanceof BedBlock && state.getValue(BedBlock.PART) == BedPart.HEAD ){
-                    logger.info("found bed head at {}", current);
 
                     BlockEntity blockEntity = level.getBlockEntity(current);
 
@@ -105,7 +99,6 @@ public abstract class Scoring {
 
             //checking if this block has a 0 light value, independent from sky light
             if(lightEngine.getLightValue(current) <= 0){
-                logger.info("has bad light");
                 return null;
             }
 
@@ -125,14 +118,12 @@ public abstract class Scoring {
 
         int resultScore;
 
-        if(count >= Social_contract.MAX_ROOM_SIZE - 1){
+        if(count >= max_room_size - 1){
             logger.info("We hit the maximum and have concluded that the room is not enclosed");
             resultScore = 0;
         }else if(!roommates.isEmpty()){
-            logger.info("First score: {}", count);
-
             resultScore = count / (roommates.size());
-            logger.info("Score after accounting for {} roommates: {}", roommates.size(), resultScore);
+
         }else{
             resultScore = count;
         }
@@ -140,13 +131,9 @@ public abstract class Scoring {
         //since each roommate must be in the same space, they must have the same score
         //perhaps this shouldn't be a linear function of the number of roommates
         for (UUID roommateID : roommates){
-            logger.info("roommate exists with UUID {}", roommateID);
             Entity entity = level.getEntity(roommateID);
             if(entity instanceof Villager villager){
-
                 Happiness.setHappiness(resultScore, villager, Happiness.HappinessType.ROOM);
-
-
 
             }
 
@@ -177,7 +164,6 @@ public abstract class Scoring {
 
             if(state.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER) {
                 doorList.add(new GlobalPos(level.dimension(), pos));
-                logger.info("found door");
             }
             return true;
 

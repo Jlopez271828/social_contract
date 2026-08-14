@@ -3,9 +3,12 @@ package jlopez271828.social_contract.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
+import jlopez271828.SocialContractGamerules;
 import jlopez271828.social_contract.Happiness;
+import jlopez271828.social_contract.SocialContractConfig;
 import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.behavior.CustomGoalPackages;
+import jlopez271828.social_contract.criteria.CustomCriteria;
 import jlopez271828.social_contract.networking.ClientBoundVillagerInfoPayload;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomActivities;
@@ -55,9 +58,6 @@ import java.util.Map;
 @Mixin(Villager.class)
 public abstract class VillagerMixin extends AbstractVillager  {
 
-    @Unique
-    private static final Logger logger = Social_contract.LOGGER;
-
     //Dummy constructor
     VillagerMixin(final EntityType<? extends Villager> type, final Level level){
         super(type, level);
@@ -85,6 +85,8 @@ public abstract class VillagerMixin extends AbstractVillager  {
 //
 //
 //    }
+
+    @Shadow public abstract VillagerData getVillagerData();
 
     @ModifyReturnValue(method = "lambda$static$0",
             at = @At("RETURN")
@@ -135,6 +137,11 @@ public abstract class VillagerMixin extends AbstractVillager  {
             Happiness happiness = Happiness.getOrAttach((Villager) (Object) this);
             Map<Happiness.HappinessType, Integer> map = happiness.getMap();
 
+            Level level = player.level();
+            if(happiness.getMap().get(Happiness.HappinessType.ROOM) > 500 && player instanceof ServerPlayer) {
+                CustomCriteria.NICE_PLACE_CRITERION.trigger((ServerPlayer) player);
+            }
+
 
             MerchantOffers offers = this.getOffers();
             int numAvailableOffers = Social_contract.constrainOffers((Villager) (Object) this, offers);
@@ -143,7 +150,7 @@ public abstract class VillagerMixin extends AbstractVillager  {
                 Social_contract.constrainOffers(offers, numAvailableOffers);
             }
 
-            if(happiness.totalHappiness >= Social_contract.MIN_HAPPINESS_REQUEST){
+            if(happiness.totalHappiness >= SocialContractConfig.MIN_HAPPINESS_DISCOUNT && this.getVillagerData().level() > 3){
                 for(MerchantOffer offer : offers){
                     offer.setSpecialPriceDiff(-1 * Mth.ceil(0.20 * offer.getCostA().count()));
                 }
@@ -203,7 +210,7 @@ public abstract class VillagerMixin extends AbstractVillager  {
         // If you think this is unnecessary, by all means, make a GitHub issue about it.
         if(currentLevel < 5 && currentLevel > 0) {
 
-            return Happiness.check((Villager) (Object) this, Social_contract.MIN_HAPPINESS_LEVELS[currentLevel]);
+            return Happiness.check((Villager) (Object) this, SocialContractConfig.MIN_HAPPINESS_LEVELS[currentLevel]);
 
 
         }
@@ -219,16 +226,24 @@ public abstract class VillagerMixin extends AbstractVillager  {
     )
     private void tellNearbyVillagersThatIDied(DamageSource source, CallbackInfo ci){
 
+        Level level = this.level();
+
+        if(!(level instanceof ServerLevel) ){
+            return;
+        }
+
         Vec3 position = this.position();
-        Vec3 offset = new Vec3(Social_contract.DEATH_REPORT_RADIUS, Social_contract.DEATH_REPORT_RADIUS, Social_contract.DEATH_REPORT_RADIUS);
+        double radius = ((ServerLevel) level).getGameRules().get(SocialContractGamerules.VILLAGER_DEATH_REPORT_RADIUS);
 
-        List<Villager> villagers = level().getEntitiesOfClass(Villager.class, new AABB(position.subtract(offset), position.add(offset)));
+        List<Villager> villagers = level().getEntitiesOfClass(Villager.class, AABB.ofSize(position, radius * 2, 5, radius * 2));
 
-        logger.info("informing {} villagers of death", villagers.size());
+        villagers.remove((Villager) (Object) this);
+
+
 
         for(Villager villager : villagers){
 
-            Happiness.decreaseHappiness(Social_contract.HAPPINESS_LOSS_NEARBY_DEATH, villager);
+            Happiness.decreaseHappiness(SocialContractConfig.HAPPINESS_LOSS_NEARBY_DEATH, villager);
             villager.playSound(SoundEvents.VILLAGER_HURT);
             ((AbstractVillagerAccessor) villager).social_contract$addParticlesAroundSelf(ParticleTypes.SMOKE);
 
@@ -246,7 +261,7 @@ public abstract class VillagerMixin extends AbstractVillager  {
     )
     private void onHurt(LivingEntity hurtBy, CallbackInfo ci){
 
-        Happiness.decreaseHappiness(Social_contract.HAPPINESS_LOSS_DMG, (Villager) (Object) this);
+        Happiness.decreaseHappiness(SocialContractConfig.HAPPINESS_LOSS_DMG, (Villager) (Object) this);
 
     }
 

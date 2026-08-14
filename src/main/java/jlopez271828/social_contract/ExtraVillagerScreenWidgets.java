@@ -1,6 +1,5 @@
 package jlopez271828.social_contract;
 
-import com.google.common.collect.ImmutableList;
 import jlopez271828.social_contract.mixin.ScreenAccessor;
 import jlopez271828.social_contract.networking.ClientBoundVillagerInfoPayload;
 import jlopez271828.social_contract.networking.ServerBoundFollowRequestPayload;
@@ -12,17 +11,14 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.Mth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +50,7 @@ public class ExtraVillagerScreenWidgets {
     private static final int GIVE_BUTTON_WIDTH = 18;
     private static final int GIVE_BUTTON_HEIGHT = 18;
 
-    private static final float RATIO = 102.0f / Social_contract.MAX_USED_HAPPINESS;
+    private static final float RATIO = 102.0f / SocialContractConfig.MAX_USED_HAPPINESS;
 
     public static final String BASE_KEY = "text.social_contract.";
 
@@ -63,12 +59,12 @@ public class ExtraVillagerScreenWidgets {
     public static final String FOLLOW_BUTTON_START_TOOLTIP_KEY = BASE_KEY + "follow_button_start_tooltip";
 
 
-    public static final int HAPPINESS_STAGE_2 = Social_contract.MIN_HAPPINESS_LEVEL_2;
-    public static final int HAPPINESS_STAGE_3 = Social_contract.MIN_HAPPINESS_LEVEL_3;
-    public static final int HAPPINESS_STAGE_4 = Social_contract.MIN_HAPPINESS_LEVEL_4;
-    public static final int HAPPINESS_STAGE_5 = Social_contract.MIN_HAPPINESS_LEVEL_5;
-    public static final int HAPPINESS_STAGE_6 = Social_contract.MIN_HAPPINESS_DISCOUNT;
-    public static final int HAPPINESS_STAGE_7 = Social_contract.MIN_HAPPINESS_REQUEST;
+    public static final int HAPPINESS_STAGE_2 = SocialContractConfig.MIN_HAPPINESS_LEVEL_2;
+    public static final int HAPPINESS_STAGE_3 = SocialContractConfig.MIN_HAPPINESS_LEVEL_3;
+    public static final int HAPPINESS_STAGE_4 = SocialContractConfig.MIN_HAPPINESS_LEVEL_4;
+    public static final int HAPPINESS_STAGE_5 = SocialContractConfig.MIN_HAPPINESS_LEVEL_5;
+    public static final int HAPPINESS_STAGE_6 = SocialContractConfig.MIN_HAPPINESS_DISCOUNT;
+    public static final int HAPPINESS_STAGE_7 = SocialContractConfig.MIN_HAPPINESS_REQUEST;
 
     public static final int HAPPINESS_BAD_STAGE_1 = -20;
     public static final int HAPPINESS_BAD_STAGE_2 = -100;

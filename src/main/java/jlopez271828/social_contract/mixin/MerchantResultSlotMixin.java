@@ -1,7 +1,7 @@
 package jlopez271828.social_contract.mixin;
 
 import jlopez271828.social_contract.Happiness;
-import jlopez271828.social_contract.Social_contract;
+import jlopez271828.social_contract.SocialContractConfig;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MerchantResultSlot;
@@ -32,7 +32,7 @@ public class MerchantResultSlotMixin {
     private void onTrade(Player player, ItemStack carried, CallbackInfo ci){
         //this gets ran twice, once on client, and once on server
         if(this.merchant instanceof Villager villager){
-            Happiness.increaseHappiness(Social_contract.HAPPINESS_FOR_TRADE, villager, Happiness.HappinessType.TRADE);
+            Happiness.increaseHappiness(SocialContractConfig.HAPPINESS_FOR_TRADE, villager, Happiness.HappinessType.TRADE);
         }
     }
 
