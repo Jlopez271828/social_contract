@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "light_power=0": {
+      "model": "social_contract:block/villager_light_0"
+    },
+    "light_power=1": {
+      "model": "social_contract:block/villager_light_1"
+    },
+    "light_power=2": {
+      "model": "social_contract:block/villager_light_2"
+    },
+    "light_power=3": {
+      "model": "social_contract:block/villager_light_3"
+    }
+  }
+}

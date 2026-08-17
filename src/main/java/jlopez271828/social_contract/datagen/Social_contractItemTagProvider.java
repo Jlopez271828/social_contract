@@ -5,6 +5,10 @@ import jlopez271828.social_contract.types.CustomItemTags;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.references.BlockItemIds;
+import net.minecraft.references.ItemIds;
+import net.minecraft.tags.BlockItemTagId;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 
@@ -24,31 +28,30 @@ public class Social_contractItemTagProvider extends FabricTagsProvider.ItemTagsP
     protected void addTags(HolderLookup.Provider registries) {
 
         //Maybe there should be multiple tags, one for general villager giftable, and more for each profession
-        valueLookupBuilder(VILLAGER_GIFTABLE)
+        builder(VILLAGER_GIFTABLE)
                 .addOptionalTag(CustomItemTags.VILLAGER_DECORATION)
                 .addOptionalTag(ItemTags.VILLAGER_PICKS_UP)
                 .addOptionalTag(ItemTags.BOOKSHELF_BOOKS)
-                .add(Items.WRITTEN_BOOK)
-                .addOptionalTag(ItemTags.FLOWERS)
-                .add(CustomItems.BOUQUET)
-                .add(Items.APPLE)
-                .add(Items.HONEY_BOTTLE)
-                .add(Items.HONEYCOMB)
-                .add(Items.COOKIE)
-                .add(Items.CAKE)
-                .add(Items.SUGAR) //there really should be a tag for all these cooked foods ...
-                .add(Items.COOKED_BEEF)
-                .add(Items.COOKED_CHICKEN)
-                .add(Items.COOKED_COD)
-                .add(Items.COOKED_MUTTON)
-                .add(Items.COOKED_RABBIT)
-                .add(Items.COOKED_PORKCHOP)
-                .add(Items.COOKED_SALMON);
+                .add(ItemIds.WRITTEN_BOOK)
+                .addOptionalTag(BlockItemTags.FLOWERS.item())
+                .add(ItemIds.APPLE)
+                .add(ItemIds.HONEY_BOTTLE)
+                .add(ItemIds.HONEYCOMB)
+                .add(ItemIds.COOKIE)
+                .add(BlockItemIds.CAKE)
+                .add(ItemIds.SUGAR) //there really should be a tag for all these cooked foods ...
+                .add(ItemIds.COOKED_BEEF)
+                .add(ItemIds.COOKED_CHICKEN)
+                .add(ItemIds.COOKED_COD)
+                .add(ItemIds.COOKED_MUTTON)
+                .add(ItemIds.COOKED_RABBIT)
+                .add(ItemIds.COOKED_PORKCHOP)
+                .add(ItemIds.COOKED_SALMON);
 
-        valueLookupBuilder(CustomItemTags.VILLAGER_DECORATION)
-                .add(Items.DECORATED_POT)
-                .add(Items.JUKEBOX)
-                .add(Items.PAINTING)
-                .add(Items.FLOWER_POT);
+        builder(CustomItemTags.VILLAGER_DECORATION)
+                .add(BlockItemIds.DECORATED_POT)
+                .add(BlockItemIds.JUKEBOX)
+                .add(ItemIds.PAINTING)
+                .add(BlockItemIds.FLOWER_POT);
     }
 }

@@ -112,7 +112,7 @@ public class DecorateRoomTask extends Behavior<Villager> {
             return;
         }
 
-        this.homeVec = this.home.pos().getBottomCenter();
+        this.homeVec = Vec3.atBottomCenterOf(this.home.pos());
 
         villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.home.pos(), 0.5f, 2));
 
@@ -171,7 +171,7 @@ public class DecorateRoomTask extends Behavior<Villager> {
 
             case MOVING_TO_DECORATION_SPOT -> {
 
-                if (villager.distanceToSqr(this.decorationFloor.getBottomCenter()) < 2.0) {
+                if (villager.distanceToSqr(Vec3.atBottomCenterOf( this.decorationFloor)) < 2.0) {
                     this.state = State.DECORATING;
                 } else if (villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).isEmpty()) {
                     this.setTarget(villager, this.decorationFloor, 1);

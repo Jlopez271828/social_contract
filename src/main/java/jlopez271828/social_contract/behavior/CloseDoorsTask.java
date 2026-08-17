@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class CloseDoorsTask extends Behavior<Villager> {
         Optional<GlobalPos> homeOpt = villager.getBrain().getMemory(MemoryModuleType.HOME);
         if(homeOpt.isPresent()){
             GlobalPos home = homeOpt.get();
-            if(home.dimension() != level.dimension() || villager.distanceToSqr(home.pos().getBottomCenter()) > 9.0){
+            if(home.dimension() != level.dimension() ||  villager.distanceToSqr(Vec3.atBottomCenterOf( home.pos())) > 9.0){
                 return false;
             }
         }else{
@@ -176,7 +177,7 @@ public class CloseDoorsTask extends Behavior<Villager> {
 
             case WALKING_TO_DOOR -> {
 
-                double distanceSq = villager.distanceToSqr(this.currentTarget.pos().getBottomCenter());
+                double distanceSq = villager.distanceToSqr(Vec3.atBottomCenterOf( this.currentTarget.pos()));
 
                 if (distanceSq <= closeEnough * closeEnough + 0.8) {
                     BlockState state = level.getBlockState(this.currentTarget.pos());

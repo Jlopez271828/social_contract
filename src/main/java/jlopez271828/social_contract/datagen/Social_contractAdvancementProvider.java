@@ -5,9 +5,10 @@ import jlopez271828.social_contract.Social_contract;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
 import net.minecraft.advancements.*;
-import net.minecraft.advancements.criterion.TradeTrigger;
+import net.minecraft.advancements.triggers.TradeTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
+import net.minecraft.references.BlockItemIds;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 
@@ -103,7 +104,7 @@ public class Social_contractAdvancementProvider extends FabricAdvancementProvide
         AdvancementHolder nicePlace = Advancement.Builder.advancement()
                 .parent(root)
                 .display(
-                        Items.RED_BED,
+                        Items.BED.red(),
                         Component.literal("Nice Place"),
                         Component.literal("Trade With a Villager with a room score of 500 or above"),
                         null,

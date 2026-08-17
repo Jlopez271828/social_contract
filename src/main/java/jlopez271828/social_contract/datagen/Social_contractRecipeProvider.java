@@ -9,6 +9,7 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 
@@ -29,10 +30,10 @@ public class Social_contractRecipeProvider extends FabricRecipeProvider {
 
                 ShapelessRecipeBuilder builder = shapeless(RecipeCategory.DECORATIONS, CustomItems.BOUQUET);
                 for(int i = 0; i < 6; i++){
-                    builder.requires(ItemTags.FLOWERS);
+                    builder.requires(BlockItemTags.FLOWERS.item());
                 }
 
-                builder.unlockedBy("has_tag_" + ItemTags.FLOWERS.location(), has(ItemTags.FLOWERS));
+                builder.unlockedBy("has_tag_" + BlockItemTags.FLOWERS, has(BlockItemTags.FLOWERS.item()));
 
                 builder.save(this.output);
 

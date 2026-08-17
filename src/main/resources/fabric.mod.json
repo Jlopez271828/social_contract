@@ -8,7 +8,7 @@
 		"Jlopez271828"
 	],
 	"contact": {
-		"homepage": "copingSeethingMalding.com",
+		"homepage": "",
 		"sources": "https://github.com/Jlopez271828/social_contract"
 	},
 	"license": "LGPL-3.0",
@@ -30,7 +30,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.19.3",
-		"minecraft": "~26.1.2",
+		"minecraft": "~26.2",
 		"java": ">=25",
 		"fabric-api": "*"
 	},

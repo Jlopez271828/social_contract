@@ -1,7 +1,7 @@
 package jlopez271828.social_contract.criteria;
 
 import jlopez271828.social_contract.Social_contract;
-import net.minecraft.advancements.CriterionTrigger;
+import net.minecraft.advancements.triggers.CriterionTrigger;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;

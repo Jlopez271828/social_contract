@@ -63,6 +63,7 @@ public class Social_contract implements ModInitializer {
         AttachmentTypes.initialize();
         CustomCriteria.initialize();
         SocialContractGamerules.initialize();
+        CustomBlocks.initialize();
 
 
 	}
@@ -472,7 +473,7 @@ public class Social_contract implements ModInitializer {
 
     public static void summonLighting(Vec3 pos, ServerLevel level){
 
-        LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.CONVERSION);
+        LightningBolt bolt = EntityTypes.LIGHTNING_BOLT.create(level, EntitySpawnReason.CONVERSION);
         if(bolt == null){
             return;
         }
@@ -494,11 +495,11 @@ public class Social_contract implements ModInitializer {
 
 
             if(professionHolder.is(VillagerProfession.LIBRARIAN) || professionHolder.is(VillagerProfession.CLERIC)){
-                entityType = EntityType.EVOKER;
+                entityType = EntityTypes.EVOKER;
             }else if (professionHolder.is(VillagerProfession.FLETCHER)){
-                entityType = EntityType.PILLAGER;
+                entityType = EntityTypes.PILLAGER;
             }else{
-                entityType = EntityType.VINDICATOR;
+                entityType = EntityTypes.VINDICATOR;
             }
 
             ((VillagerAccessor) villager).social_contract$releaseAllPois();
