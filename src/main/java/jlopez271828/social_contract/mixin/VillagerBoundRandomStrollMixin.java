@@ -97,38 +97,38 @@ abstract class VillagerBoundRandomStrollMixin {
 
     }
 
-//    @Inject(
-//            method = "lambda$create$2",
-//            at = @At(
-//                    value = "INVOKE",
-//                    target = "Lnet/minecraft/world/entity/ai/behavior/declarative/MemoryAccessor;setOrErase(Ljava/util/Optional;)V"
-//            )
-//    )
-//    private static void moveAlongPath(
-//            int maxXyDist,
-//            int maxYDist,
-//            MemoryAccessor walkTarget,
-//            float speedModifier,
-//            ServerLevel level,
-//            PathfinderMob body,
-//            long timestamp,
-//            CallbackInfoReturnable<Boolean> cir,
-//            @Local(name = "landPos") Vec3 landPos
-//    ){
-//
-//        if(landPos == null){
-//            return;
-//        }
-//
-//        Path path = body.getNavigation().createPath(BlockPos.containing(landPos), 1);
-//
-//        if(path != null) {
-//            body.getNavigation().moveTo(path, speedModifier);
-//        }
-//
-//        cir.setReturnValue(true);
-//
-//    }
+    @Inject(
+            method = "lambda$create$2",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/ai/behavior/declarative/MemoryAccessor;setOrErase(Ljava/util/Optional;)V"
+            )
+    )
+    private static void moveAlongPath(
+            int maxXyDist,
+            int maxYDist,
+            MemoryAccessor walkTarget,
+            float speedModifier,
+            ServerLevel level,
+            PathfinderMob body,
+            long timestamp,
+            CallbackInfoReturnable<Boolean> cir,
+            @Local(name = "landPos") Vec3 landPos
+    ){
+
+        if(landPos == null){
+            return;
+        }
+
+        Path path = body.getNavigation().createPath(BlockPos.containing(landPos), 1);
+
+        if(path != null) {
+            body.getNavigation().moveTo(path, speedModifier);
+        }
+
+        cir.setReturnValue(true);
+
+    }
 
     private static Vec3 checkHomeDistance(PathfinderMob mob, Vec3 toCheck){
         if(toCheck == null){
