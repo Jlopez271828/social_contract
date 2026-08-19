@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_tag_minecraft:flowers": {
+    "has_tag_BlockItemTagId[block=TagKey[minecraft:block / minecraft:flowers], item=TagKey[minecraft:item / minecraft:flowers]]": {
       "conditions": {
         "items": [
           {
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_tag_minecraft:flowers"
+      "has_tag_BlockItemTagId[block=TagKey[minecraft:block / minecraft:flowers], item=TagKey[minecraft:item / minecraft:flowers]]"
     ]
   ],
   "rewards": {

@@ -1,6 +1,0 @@
-{
-  "parent": "social_contract:block/villager_light_template_z_hanging",
-  "textures": {
-    "5": "social_contract:block/body_3_z"
-  }
-}

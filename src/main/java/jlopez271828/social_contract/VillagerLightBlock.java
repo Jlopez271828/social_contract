@@ -47,9 +47,15 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
     public static final IntegerProperty AGE = BlockStateProperties.AGE_4;
     public static final BooleanProperty HANGING = BlockStateProperties.HANGING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
-    private static final VoxelShape SHAPE_STANDING = Shapes.or(Block.column(4.0, 8.0, 10.0), Block.column(6.0, 1.0, 8.0));
-    private static final VoxelShape SHAPE_HANGING = SHAPE_STANDING.move(0.0, 0.0625, 0.0).optimize();
+    public static final EnumProperty<Direction.Axis> AXIS = EnumProperty.create(
+            "axis_xz",
+            Direction.Axis.class,
+            Direction.Axis.X,
+            Direction.Axis.Z
+    );
+//    private static final VoxelShape SHAPE_STANDING = Shapes.or(Block.column(4.0, 8.0, 10.0), Block.column(6.0, 1.0, 8.0));
+//    private static final VoxelShape SHAPE_HANGING = SHAPE_STANDING.move(0.0, 0.0625, 0.0).optimize();
+    public static final VoxelShape SHAPE = Shapes.or(Block.column(4.0, 8.0, 10.0), Block.column(6.0, 1.0, 8.0));
 
     public VillagerLightBlock(BlockBehaviour.Properties properties) {
         super(properties);
@@ -175,7 +181,7 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
 
     @Override
     protected VoxelShape getShape(final BlockState state, final BlockGetter level, final BlockPos pos, final CollisionContext context) {
-        return state.getValue(HANGING) ? SHAPE_HANGING : SHAPE_STANDING;
+        return SHAPE;
     }
 
 
