@@ -1,5 +1,5 @@
 {
-  "parent": "social_contract:block/template_villager_light_hanging",
+  "parent": "social_contract:block/template_villager_light_hanging_b",
   "textures": {
     "body": "social_contract:block/villager_light_body_0"
   }

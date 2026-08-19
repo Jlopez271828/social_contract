@@ -40,23 +40,36 @@ public class VillagerLightBlockStateModelGenerator {
                     BODY
             );
 
-    private static final ModelTemplate HANGING_TEMPLATE =
+    private static final ModelTemplate HANGING_TEMPLATE_A =
             new ModelTemplate(
                     Optional.of(Identifier.fromNamespaceAndPath(
                             Social_contract.MOD_ID,
-                            "block/template_villager_light_hanging"
+                            "block/template_villager_light_hanging_a"
                     )),
                     Optional.empty(),
                     BODY
             );
 
-    private static BlockModelDefinitionGenerator createBlockStates(VillagerLightBlock block, Identifier[] standingModelIds, Identifier[] hangingModelIds) {
+    private static final ModelTemplate HANGING_TEMPLATE_B =
+            new ModelTemplate(
+                    Optional.of(Identifier.fromNamespaceAndPath(
+                            Social_contract.MOD_ID,
+                            "block/template_villager_light_hanging_b"
+                    )),
+                    Optional.empty(),
+                    BODY
+            );
 
-        MultiVariant[] hangingModels = new MultiVariant[4];
+    private static BlockModelDefinitionGenerator createBlockStates(VillagerLightBlock block, Identifier[] standingModelIds, Identifier[] hangingModelIdsA, Identifier[] hangingModelIdsB) {
+
+        MultiVariant[] hangingModelsA = new MultiVariant[4];
+        MultiVariant[] hangingModelsB = new MultiVariant[4];
         MultiVariant[] standingModels = new MultiVariant[4];
 
         for(int i = 0; i < 4; i++){
-            hangingModels[i] = BlockModelGenerators.plainVariant(hangingModelIds[i]);
+            hangingModelsA[i] = BlockModelGenerators.plainVariant(hangingModelIdsA[i]);
+            hangingModelsB[i] = BlockModelGenerators.plainVariant(hangingModelIdsB[i]);
+
             standingModels[i] = BlockModelGenerators.plainVariant(standingModelIds[i]);
         }
 
@@ -70,7 +83,24 @@ public class VillagerLightBlockStateModelGenerator {
 
                 Boolean isHanging = j == 0;
 
-                MultiVariant[] thisList = isHanging ? hangingModels : standingModels;
+                MultiVariant[] thisList;
+
+                if(isHanging){
+
+                    if(thisAxis == Direction.Axis.X){
+
+                        thisList = hangingModelsA;
+
+                    }else{
+
+                        thisList = hangingModelsB;
+                    }
+
+                }else{
+
+                    thisList = standingModels;
+
+                }
 
 
                 for(int k = 0; k < 4; k++){
@@ -95,7 +125,8 @@ public class VillagerLightBlockStateModelGenerator {
     public static void registerVillagerLight(BlockModelGenerators generators, VillagerLightBlock block){
 
         Identifier[] standingModels = new Identifier[4];
-        Identifier[] hangingModels = new Identifier[4];
+        Identifier[] hangingModelsA = new Identifier[4];
+        Identifier[] hangingModelsB = new Identifier[4];
 
         for(int i = 0; i < 4; i++){
 
@@ -107,23 +138,13 @@ public class VillagerLightBlockStateModelGenerator {
                     .put(NOSE, new Material(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "villager_light_noise")));
 
             standingModels[i] = STANDING_TEMPLATE.createWithSuffix(CustomBlocks.VILLAGER_LIGHT_BLOCKITEM, "_standing_" + i, mapping, generators.modelOutput);
-
+            hangingModelsA[i] = HANGING_TEMPLATE_A.createWithSuffix(CustomBlocks.VILLAGER_LIGHT_BLOCKITEM, "_hanging_a_" + i, mapping, generators.modelOutput);
+            hangingModelsB[i] = HANGING_TEMPLATE_B.createWithSuffix(CustomBlocks.VILLAGER_LIGHT_BLOCKITEM, "_hanging_b_" + i, mapping, generators.modelOutput);
         }
 
-        for(int i = 0; i < 4; i++){
 
-            TextureMapping mapping = new TextureMapping()
-                    .put(BODY, new Material(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "block/villager_light_body_" + i)))
-                    .put(HEAD, new Material(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "villager_light_head")))
-                    .put(HANDLE, new Material(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "villager_light_handle")))
-                    .put(STAND, new Material(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "villager_light_stand")))
-                    .put(NOSE, new Material(Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "villager_light_noise")));
 
-            hangingModels[i] = HANGING_TEMPLATE.createWithSuffix(CustomBlocks.VILLAGER_LIGHT_BLOCKITEM, "_hanging_" + i, mapping, generators.modelOutput);
-
-        }
-
-        generators.blockStateOutput.accept(createBlockStates(block, standingModels, hangingModels));
+        generators.blockStateOutput.accept(createBlockStates(block, standingModels, hangingModelsA, hangingModelsB));
 
 
         generators.registerSimpleItemModel(block, standingModels[0]);

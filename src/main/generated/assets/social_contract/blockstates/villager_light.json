@@ -17,19 +17,19 @@
       "y": 90
     },
     "axis_xz=x,hanging=true,light_power=0": {
-      "model": "social_contract:block/villager_light_hanging_0",
+      "model": "social_contract:block/villager_light_hanging_a_0",
       "y": 90
     },
     "axis_xz=x,hanging=true,light_power=1": {
-      "model": "social_contract:block/villager_light_hanging_1",
+      "model": "social_contract:block/villager_light_hanging_a_1",
       "y": 90
     },
     "axis_xz=x,hanging=true,light_power=2": {
-      "model": "social_contract:block/villager_light_hanging_2",
+      "model": "social_contract:block/villager_light_hanging_a_2",
       "y": 90
     },
     "axis_xz=x,hanging=true,light_power=3": {
-      "model": "social_contract:block/villager_light_hanging_3",
+      "model": "social_contract:block/villager_light_hanging_a_3",
       "y": 90
     },
     "axis_xz=z,hanging=false,light_power=0": {
@@ -49,19 +49,19 @@
       "uvlock": true
     },
     "axis_xz=z,hanging=true,light_power=0": {
-      "model": "social_contract:block/villager_light_hanging_0",
+      "model": "social_contract:block/villager_light_hanging_b_0",
       "uvlock": true
     },
     "axis_xz=z,hanging=true,light_power=1": {
-      "model": "social_contract:block/villager_light_hanging_1",
+      "model": "social_contract:block/villager_light_hanging_b_1",
       "uvlock": true
     },
     "axis_xz=z,hanging=true,light_power=2": {
-      "model": "social_contract:block/villager_light_hanging_2",
+      "model": "social_contract:block/villager_light_hanging_b_2",
       "uvlock": true
     },
     "axis_xz=z,hanging=true,light_power=3": {
-      "model": "social_contract:block/villager_light_hanging_3",
+      "model": "social_contract:block/villager_light_hanging_b_3",
       "uvlock": true
     }
   }

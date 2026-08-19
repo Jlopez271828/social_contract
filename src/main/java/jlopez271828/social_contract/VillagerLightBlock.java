@@ -93,9 +93,9 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
 
                 zombie.igniteForSeconds(3);
 
-                if(lightPower == 3){
-                    zombie.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 300, 4));
-                }
+
+                zombie.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 300, lightPower));
+
 
             }
 
