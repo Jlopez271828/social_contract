@@ -1,6 +1,5 @@
 package jlopez271828.social_contract;
 
-import jlopez271828.SocialContractGamerules;
 import jlopez271828.social_contract.mixin.LightingAccessor;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import net.minecraft.core.BlockPos;

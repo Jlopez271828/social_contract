@@ -3,7 +3,7 @@ package jlopez271828.social_contract.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import jlopez271828.SocialContractGamerules;
+import jlopez271828.social_contract.SocialContractGamerules;
 import jlopez271828.social_contract.Happiness;
 import jlopez271828.social_contract.SocialContractConfig;
 import jlopez271828.social_contract.Social_contract;
@@ -13,6 +13,7 @@ import jlopez271828.social_contract.networking.ClientBoundVillagerInfoPayload;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import jlopez271828.social_contract.types.CustomActivities;
 import jlopez271828.social_contract.types.CustomReputationEventTypes;
+import jlopez271828.social_contract.types.CustomSensorTypes;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -30,6 +31,7 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.gossip.GossipContainer;
 import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
@@ -42,16 +44,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -72,19 +76,19 @@ public abstract class VillagerMixin extends AbstractVillager  {
 
 
 
-// Keeping this commented because I may end up re-implementing my stored data as Memories instead of attachments.
-//    @ModifyArgs(method = "<clinit>",
-//            at = @At(value = "INVOKE",
-//                    target = "Lnet/minecraft/world/entity/ai/Brain;provider(Ljava/util/Collection;Lnet/minecraft/world/entity/ai/Brain$ActivitySupplier;)Lnet/minecraft/world/entity/ai/Brain$Provider;"
-//            )
-//    )
-//    private static void addCustomVillagerSensors(Args args){
-//        Collection<SensorType<?>> altered = new ArrayList<SensorType<?>>(args.get(0));
-//        altered.add(CustomSensorTypes.ROOM_SCORE_SENSOR);
-//        args.set(0, altered);
-//
-//
-//    }
+
+    @ModifyArgs(method = "<clinit>",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/ai/Brain;provider(Ljava/util/Collection;Lnet/minecraft/world/entity/ai/Brain$ActivitySupplier;)Lnet/minecraft/world/entity/ai/Brain$Provider;"
+            )
+    )
+    private static void addCustomVillagerSensors(Args args){
+        Collection<SensorType<?>> altered = new ArrayList<SensorType<?>>(args.get(0));
+        altered.add(CustomSensorTypes.VILLAGER_LIGHT_SENSOR);
+        args.set(0, altered);
+
+
+    }
 
     @Shadow public abstract VillagerData getVillagerData();
 

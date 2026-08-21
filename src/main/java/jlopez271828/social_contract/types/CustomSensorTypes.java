@@ -1,6 +1,7 @@
 package jlopez271828.social_contract.types;
 
 
+import jlopez271828.social_contract.behavior.VillagerLightSensor;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Supplier;
 
 public class CustomSensorTypes {
+
+    public static final SensorType<VillagerLightSensor> VILLAGER_LIGHT_SENSOR = register("villager_light_sensor", VillagerLightSensor::new);
 
 //    public static final SensorType<RoomScoreSensor> ROOM_SCORE_SENSOR = register("room_score_sensor", RoomScoreSensor::new);
     private static final Logger logger = LoggerFactory.getLogger("social_contract");

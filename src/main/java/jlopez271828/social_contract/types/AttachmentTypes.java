@@ -59,6 +59,11 @@ public class AttachmentTypes {
             builder -> builder.persistent(Codec.BOOL)
     );
 
+    public static final AttachmentType<List<GlobalPos>> KNOWN_VILLAGER_LIGHTS = AttachmentRegistry.create(
+            Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "known_villager_lights"),
+            builder -> builder.persistent(GlobalPos.CODEC.listOf())
+    );
+
 
 
     public static void initialize(){

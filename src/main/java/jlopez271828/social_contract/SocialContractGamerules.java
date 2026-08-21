@@ -1,7 +1,5 @@
-package jlopez271828;
+package jlopez271828.social_contract;
 
-import jlopez271828.social_contract.SocialContractConfig;
-import jlopez271828.social_contract.Social_contract;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.gamerules.GameRule;

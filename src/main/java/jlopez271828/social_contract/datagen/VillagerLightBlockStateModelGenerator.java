@@ -4,6 +4,8 @@ import com.mojang.datafixers.kinds.IdF;
 import jlopez271828.social_contract.CustomBlocks;
 import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.VillagerLightBlock;
+import net.minecraft.client.color.item.ItemTintSource;
+import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.BlockModelDefinitionGenerator;
@@ -147,7 +149,7 @@ public class VillagerLightBlockStateModelGenerator {
         generators.blockStateOutput.accept(createBlockStates(block, standingModels, hangingModelsA, hangingModelsB));
 
 
-        generators.registerSimpleItemModel(block, standingModels[0]);
+        generators.registerSimpleItemModel(block, standingModels[3]);
 
 
 

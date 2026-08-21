@@ -7,6 +7,7 @@ import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.behavior.CloseDoorsTask;
 import jlopez271828.social_contract.behavior.DecorateRoomTask;
 import jlopez271828.social_contract.behavior.HealSelfTask;
+import jlopez271828.social_contract.behavior.LightVillagerLight;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.ai.behavior.VillagerGoalPackages;
 import net.minecraft.world.entity.npc.villager.Villager;
@@ -37,6 +38,7 @@ public class VillagerGoalPackagesMixin {
         List<Pair<Integer, ? extends BehaviorControl<? super Villager>>> toReturn = new ArrayList<>(original);
 
         toReturn.addLast(Pair.of(3, new DecorateRoomTask()));
+        toReturn.addLast(Pair.of(3, new LightVillagerLight()));
 
         return ImmutableList.copyOf(toReturn);
     }

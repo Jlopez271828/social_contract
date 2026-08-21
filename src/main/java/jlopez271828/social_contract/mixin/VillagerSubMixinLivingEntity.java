@@ -5,7 +5,10 @@ import jlopez271828.social_contract.Happiness;
 import jlopez271828.social_contract.SocialContractConfig;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 
 
@@ -15,7 +18,11 @@ import org.spongepowered.asm.mixin.Mixin;
  * value of damage done.
  */
 @Mixin(Villager.class)
-public class VillagerSubMixin extends LivingEntityMixin {
+abstract class VillagerSubMixinLivingEntity extends LivingEntityMixin {
+
+    protected VillagerSubMixinLivingEntity(EntityType<? extends Mob> type, Level level) {
+        super(type, level);
+    }
 
     @Override
     protected void overrideForVillager(ServerLevel level, DamageSource source, float dmg, Operation<Void> original) {

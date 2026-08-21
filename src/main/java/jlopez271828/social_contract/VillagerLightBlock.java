@@ -5,6 +5,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -68,12 +71,12 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
         );
     }
 
-    @Override
-    protected void onPlace(final BlockState state, final Level level, final BlockPos pos, final BlockState oldState, final boolean movedByPiston) {
-
-//        level.scheduleTick(pos, this, 10);
-
-    }
+//    @Override
+//    protected void onPlace(final BlockState state, final Level level, final BlockPos pos, final BlockState oldState, final boolean movedByPiston) {
+//
+////        level.scheduleTick(pos, this, 10);
+//
+//    }
 
     @Override
     protected void tick(final BlockState state, final ServerLevel level, final BlockPos pos, final RandomSource random){
@@ -123,11 +126,10 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
 
             if (age == 4) {
 
-                level.setBlock(pos, state.setValue(LIGHT_POWER, lightPower - 1), Block.UPDATE_CLIENTS | Block.UPDATE_NEIGHBORS | Block.UPDATE_IMMEDIATE | Block.UPDATE_SUPPRESS_DROPS);
+                level.setBlock(pos, state.setValue(LIGHT_POWER, lightPower - 1).setValue(AGE, 0), 2);
 
-                level.setBlock(pos, state.setValue(AGE, 0), 260);
             } else {
-                level.setBlock(pos, state.setValue(AGE, age + 1), 260);
+                level.setBlock(pos, state.setValue(AGE, age + 1), 2);
             }
 
         }
@@ -167,13 +169,8 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
                     if (state.canSurvive(context.getLevel(), context.getClickedPos())) {
                         cardinalFlag = true;
                     }
-
                 }
-
-
             }
-
-
         }
 
         return null;
@@ -210,6 +207,13 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
             level.scheduleTick(pos, this, 10);
         }
 
+        if(!level.isClientSide()){
+            if(lightPower == 3){
+                level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS);
+            }else {
+                level.playSound(null, pos, SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS);
+            }
+        }
         return InteractionResult.SUCCESS;
     }
 

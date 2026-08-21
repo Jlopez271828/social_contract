@@ -1,6 +1,5 @@
 package jlopez271828.social_contract;
 
-import jlopez271828.SocialContractGamerules;
 import jlopez271828.social_contract.criteria.CustomCriteria;
 import jlopez271828.social_contract.mixin.VillagerAccessor;
 import jlopez271828.social_contract.networking.PacketHandlers;
@@ -64,6 +63,9 @@ public class Social_contract implements ModInitializer {
         CustomCriteria.initialize();
         SocialContractGamerules.initialize();
         CustomBlocks.initialize();
+        CustomBlockStateProperties.initialize();
+        CustomSensorTypes.initialize();
+        CustomMemoryModuleTypes.initialize();
 
 
 	}
@@ -666,7 +668,7 @@ public class Social_contract implements ModInitializer {
 
     public static BlockPos getFloorBelow(final BlockPos start, final ServerLevel level){
 
-        BlockPos current = start;
+        BlockPos current = start.below();
         BlockPos previous = start;
 
         for(int i = 0; i < 40; i++){
