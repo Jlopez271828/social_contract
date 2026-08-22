@@ -9,7 +9,7 @@ public class SocialContractConfig {
     public static final int ENCHANTMENT_COST_B = 25;
     public static final int[] xpPerLevel = {1, 5, 10, 15, 30};
 
-    public static final int MAX_ROOM_SIZE = 800;
+    public static final int MAX_ROOM_SIZE = 1000;
     public static final int DEATH_REPORT_RADIUS = 50;
     public static final int MAX_HOME_WANDER_DISTANCE = 45;
     //this should be in seconds.

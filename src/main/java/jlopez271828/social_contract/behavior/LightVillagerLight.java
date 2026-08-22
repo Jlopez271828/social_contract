@@ -1,6 +1,5 @@
 package jlopez271828.social_contract.behavior;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import jlopez271828.social_contract.CustomBlockStateProperties;
 import jlopez271828.social_contract.CustomBlocks;
@@ -16,12 +15,9 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class LightVillagerLight extends Behavior<Villager> {
 
@@ -103,7 +99,11 @@ public class LightVillagerLight extends Behavior<Villager> {
 
         if(villager.distanceToSqr(this.floorTarget) < 2 * 2 - 1){
             BlockState state = level.getBlockState(this.target);
+            int lightPower = state.getValue(CustomBlockStateProperties.LIGHT_POWER);
             level.setBlock(this.target, state.setValue(CustomBlockStateProperties.LIGHT_POWER, 3), 2);
+            if(lightPower == 0){
+                level.scheduleTick(this.target, CustomBlocks.VILLAGER_LIGHT_BLOCKITEM, 10);
+            }
             villager.playSound(SoundEvents.FLINTANDSTEEL_USE);
             this.hasLit = true;
         }

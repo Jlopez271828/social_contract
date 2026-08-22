@@ -136,6 +136,10 @@ public class DecorateRoomTask extends Behavior<Villager> {
                 }
 
                 if(distanceSq < 5){
+                    if(this.lookSpotVec == null){ // catching the case where the villager begins the task already near its bed
+                        this.state = State.FINDING_SPOT;
+                        return;
+                    }
                     villager.getBrain().setMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(this.lookSpotVec, 0.5f, 1));
                     this.state = State.MOVING_TO_LOOK_SPOT;
                 } else if (villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).isEmpty()) {
@@ -190,7 +194,6 @@ public class DecorateRoomTask extends Behavior<Villager> {
                 if(decoration.is(Items.PAINTING)){
                     Optional<Holder.Reference<PaintingVariant>> paintingOpt = level.registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT).getRandom(villager.getRandom());
                     if(paintingOpt.isPresent()){
-                        Holder<PaintingVariant> holder = paintingOpt.get();
                         Optional<Painting> painting = Painting.create(level, this.decorationSpot, this.direction);
                         if(painting.isPresent()) {
                             level.addFreshEntity(painting.get());
@@ -214,7 +217,6 @@ public class DecorateRoomTask extends Behavior<Villager> {
     public void stop(final ServerLevel level, final Villager villager, final long timestamp){
 
         Social_contract.LOGGER.info("stopping task");
-        villager.removeAttached(AttachmentTypes.DECORATION_LIST);
         villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 
     }

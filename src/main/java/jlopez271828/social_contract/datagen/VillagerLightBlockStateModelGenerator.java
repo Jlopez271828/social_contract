@@ -1,27 +1,20 @@
 package jlopez271828.social_contract.datagen;
 
-import com.mojang.datafixers.kinds.IdF;
 import jlopez271828.social_contract.CustomBlocks;
 import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.VillagerLightBlock;
-import net.minecraft.client.color.item.ItemTintSource;
-import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.MultiVariant;
 import net.minecraft.client.data.models.blockstates.BlockModelDefinitionGenerator;
 import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
 import net.minecraft.client.data.models.blockstates.PropertyDispatch;
-import net.minecraft.client.data.models.model.ModelLocationUtils;
 import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.npc.villager.Villager;
-import net.minecraft.world.level.block.Block;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 public class VillagerLightBlockStateModelGenerator {
@@ -104,19 +97,11 @@ public class VillagerLightBlockStateModelGenerator {
 
                 }
 
-
                 for(int k = 0; k < 4; k++){
-
-
                     dispatch.select(thisAxis, isHanging, k, thisAxis == Direction.Axis.X ? thisList[k].with(BlockModelGenerators.Y_ROT_90) : thisList[k].with(BlockModelGenerators.UV_LOCK));
-
-
                 }
 
             }
-
-
-
         }
 
         return MultiVariantGenerator.dispatch(block).with(dispatch);
@@ -148,10 +133,7 @@ public class VillagerLightBlockStateModelGenerator {
 
         generators.blockStateOutput.accept(createBlockStates(block, standingModels, hangingModelsA, hangingModelsB));
 
-
         generators.registerSimpleItemModel(block, standingModels[3]);
-
-
 
     }
 

@@ -3,7 +3,6 @@ package jlopez271828.social_contract.mixin;
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.datafixers.util.Pair;
-import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.behavior.CloseDoorsTask;
 import jlopez271828.social_contract.behavior.DecorateRoomTask;
 import jlopez271828.social_contract.behavior.HealSelfTask;

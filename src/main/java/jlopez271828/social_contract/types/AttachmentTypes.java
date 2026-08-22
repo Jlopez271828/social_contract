@@ -12,8 +12,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class AttachmentTypes {
 
@@ -51,7 +53,7 @@ public class AttachmentTypes {
 
     public static final AttachmentType<List<ItemStack>> DECORATION_LIST = AttachmentRegistry.create(
             Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "decoration_list"),
-            builder -> builder.persistent(ItemStack.CODEC.listOf())
+            builder -> builder.persistent(ItemStack.CODEC.listOf().xmap(ArrayList::new, Function.identity()))
     );
 
     public static final AttachmentType<Boolean> SHOULD_DROP_LOOT = AttachmentRegistry.create(
@@ -61,7 +63,7 @@ public class AttachmentTypes {
 
     public static final AttachmentType<List<GlobalPos>> KNOWN_VILLAGER_LIGHTS = AttachmentRegistry.create(
             Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, "known_villager_lights"),
-            builder -> builder.persistent(GlobalPos.CODEC.listOf())
+            builder -> builder.persistent(GlobalPos.CODEC.listOf().xmap(ArrayList::new, Function.identity()))
     );
 
 

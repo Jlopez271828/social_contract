@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import org.slf4j.Logger;
@@ -73,20 +74,6 @@ public class ExtraVillagerScreenWidgets {
 
 
 
-//    public static final int[] STAGES = {
-//            HAPPINESS_BAD_STAGE_1,
-//            HAPPINESS_BAD_STAGE_1,
-//            HAPPINESS_BAD_STAGE_1,
-//            HAPPINESS_BAD_STAGE_1,
-//            HAPPINESS_STAGE_2,
-//            HAPPINESS_STAGE_2,
-//            HAPPINESS_STAGE_2,
-//            HAPPINESS_STAGE_2,
-//            HAPPINESS_STAGE_2,
-//            HAPPINESS_STAGE_2
-//    };
-
-
     public static void initialize() {
 
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
@@ -121,7 +108,7 @@ public class ExtraVillagerScreenWidgets {
                     strings.add(FormattedCharSequence.forward("GIFT: " + giftHappiness, Style.EMPTY));
                     strings.add(FormattedCharSequence.forward("TRADE: " + tradeHappiness, Style.EMPTY));
                     strings.add(FormattedCharSequence.forward("ROOM: " + roomHappiness, Style.EMPTY));
-                    strings.add(FormattedCharSequence.forward("PAIN: " + pain, Style.EMPTY));
+                    strings.add(FormattedCharSequence.forward("PAIN: " + pain, Style.EMPTY.withColor(TextColor.RED)));
 
 
 

@@ -1,7 +1,5 @@
 package jlopez271828.social_contract.behavior;
 
-import com.jcraft.jorbis.Block;
-import jlopez271828.social_contract.CustomBlockStateProperties;
 import jlopez271828.social_contract.CustomBlocks;
 import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.types.AttachmentTypes;

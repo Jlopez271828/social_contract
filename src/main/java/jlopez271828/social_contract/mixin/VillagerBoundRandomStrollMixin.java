@@ -2,8 +2,8 @@ package jlopez271828.social_contract.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import jlopez271828.social_contract.SocialContractGamerules;
 import jlopez271828.social_contract.SocialContractConfig;
+import jlopez271828.social_contract.SocialContractGamerules;
 import jlopez271828.social_contract.Social_contract;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;

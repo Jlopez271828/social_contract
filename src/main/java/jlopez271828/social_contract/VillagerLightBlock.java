@@ -3,16 +3,12 @@ package jlopez271828.social_contract;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.monster.zombie.Zombie;
@@ -23,7 +19,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LanternBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -56,8 +51,7 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
             Direction.Axis.X,
             Direction.Axis.Z
     );
-//    private static final VoxelShape SHAPE_STANDING = Shapes.or(Block.column(4.0, 8.0, 10.0), Block.column(6.0, 1.0, 8.0));
-//    private static final VoxelShape SHAPE_HANGING = SHAPE_STANDING.move(0.0, 0.0625, 0.0).optimize();
+
     public static final VoxelShape SHAPE = Shapes.or(Block.column(4.0, 8.0, 10.0), Block.column(6.0, 1.0, 8.0));
 
     public VillagerLightBlock(BlockBehaviour.Properties properties) {
@@ -70,13 +64,6 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
                 .setValue(AXIS, Direction.Axis.X)
         );
     }
-
-//    @Override
-//    protected void onPlace(final BlockState state, final Level level, final BlockPos pos, final BlockState oldState, final boolean movedByPiston) {
-//
-////        level.scheduleTick(pos, this, 10);
-//
-//    }
 
     @Override
     protected void tick(final BlockState state, final ServerLevel level, final BlockPos pos, final RandomSource random){
@@ -173,7 +160,7 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
             }
         }
 
-        return null;
+        return state.setValue(WATERLOGGED, replacedFluidState.is(Fluids.WATER));
     }
 
     @Override
@@ -203,7 +190,7 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
 
         level.setBlock(pos, state.setValue(LIGHT_POWER, (lightPower + 1) % 4), Block.UPDATE_CLIENTS | Block.UPDATE_NEIGHBORS | Block.UPDATE_IMMEDIATE | Block.UPDATE_SUPPRESS_DROPS);
 
-        if(lightPower == 0){ // we only begin ticking if the light is on
+        if(lightPower == 0){ // we only begin ticking if the light was changed from an off state to an on state
             level.scheduleTick(pos, this, 10);
         }
 
@@ -211,7 +198,7 @@ public class VillagerLightBlock extends Block implements SimpleWaterloggedBlock 
             if(lightPower == 3){
                 level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS);
             }else {
-                level.playSound(null, pos, SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS);
+                level.playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS);
             }
         }
         return InteractionResult.SUCCESS;

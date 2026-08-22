@@ -1,16 +1,13 @@
 package jlopez271828.social_contract.datagen;
 
-import jlopez271828.social_contract.CustomItems;
 import jlopez271828.social_contract.types.CustomItemTags;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.references.BlockItemIds;
 import net.minecraft.references.ItemIds;
-import net.minecraft.tags.BlockItemTagId;
 import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.Items;
 
 import java.util.concurrent.CompletableFuture;
 

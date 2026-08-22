@@ -1,7 +1,6 @@
 package jlopez271828.social_contract.behavior;
 
 import com.google.common.collect.ImmutableMap;
-import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.server.level.ServerLevel;
@@ -13,7 +12,6 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;

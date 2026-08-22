@@ -3,7 +3,6 @@ package jlopez271828.social_contract.mixin;
 import jlopez271828.social_contract.Social_contract;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.trading.Merchant;
-import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

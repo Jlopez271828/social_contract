@@ -3,10 +3,7 @@ package jlopez271828.social_contract.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import jlopez271828.social_contract.SocialContractGamerules;
-import jlopez271828.social_contract.Happiness;
-import jlopez271828.social_contract.SocialContractConfig;
-import jlopez271828.social_contract.Social_contract;
+import jlopez271828.social_contract.*;
 import jlopez271828.social_contract.behavior.CustomGoalPackages;
 import jlopez271828.social_contract.criteria.CustomCriteria;
 import jlopez271828.social_contract.networking.ClientBoundVillagerInfoPayload;
@@ -38,6 +35,9 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
@@ -49,15 +49,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Mixin(Villager.class)
 public abstract class VillagerMixin extends AbstractVillager  {
@@ -197,7 +193,31 @@ public abstract class VillagerMixin extends AbstractVillager  {
 
             }
 
+        }else if(data.profession().is(VillagerProfession.CLERIC)){
+
+            int professionLevel = data.level();
+
+            if(professionLevel > 4){
+
+                if(this.offers == null){
+                    return;
+                }
+
+                this.offers.add(
+                        new MerchantOffer(
+                                new ItemCost(Items.LANTERN),
+                                Optional.of(new ItemCost(Items.EMERALD, 3)),
+                                new ItemStack(CustomBlocks.VILLAGER_LIGHT_BLOCKITEM),
+                                12,
+                                SocialContractConfig.xpPerLevel[4],
+                                SocialContractConfig.ENCHANTED_BOOK_MULTIPLIER
+                        )
+                );
+            }
+
         }
+
+
 
 
     }
