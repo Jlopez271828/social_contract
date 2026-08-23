@@ -1,8 +1,7 @@
 # Social Contract
 
-[![Discord](https://img.shields.io/discord/1535585672683847780
-)](https://discord.gg/xvsXpZXpx8)
-
+[![Discord](https://img.shields.io/discord/1535585672683847780?logo=discord)](https://discord.gg/xvsXpZXpx8)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y7E125L7HO)
 
 <hr>
 
@@ -39,7 +38,7 @@ to stay near light sources. At night, a Villager with a room will close all the 
 
 Villagers that have reached the max happiness tier will obtain a trade for a 'Villager Totem'
 
-A new Villager themes light block has been added to the game. This block, called the 'Villager Light', will burn and inflict slowness on zombies near it. 
+A new Villager themed light block has been added to the game. This block, called the 'Villager Light', will burn and inflict slowness on zombies near it. 
 However, it will gradually wither away over time. Villagers that come by withered lights will re-light them. This light can be
 crafted with 9 iron ingots, and a Villager Totem.
 
@@ -60,5 +59,13 @@ to be weird things here and there.
 - If you would ike to help, join the Discord.
 
 <hr>
+
+## Support
+
+I am a greedy bastard.
+
+(but in all seriousness, I work many hours at a campus job, I would spend more time developing if I could spend less time working)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y7E125L7HO)
 
 
