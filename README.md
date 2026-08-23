@@ -1,6 +1,7 @@
 # Social Contract
 
-[![Discord](https://shields.io)](https://discord.gg/xvsXpZXpx8)
+[![Discord](https://img.shields.io/discord/1535585672683847780
+)](https://discord.gg/xvsXpZXpx8)
 
 
 <hr>
