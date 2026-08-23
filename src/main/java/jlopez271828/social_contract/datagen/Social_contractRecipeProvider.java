@@ -9,8 +9,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
-import net.minecraft.tags.BlockItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 

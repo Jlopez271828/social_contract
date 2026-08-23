@@ -43,8 +43,6 @@ public class PacketHandlers {
         ServerPlayNetworking.registerGlobalReceiver(ServerBoundFollowRequestPayload.TYPE,
                 (payload, context) -> {
 
-                    logger.info("received entityId: {} from a server bound packet", payload.entityId());
-
                     Player player = context.player();
 
                     int entityId = payload.entityId();
@@ -60,7 +58,6 @@ public class PacketHandlers {
                     if(entity instanceof Villager villager && player instanceof ServerPlayer serverPlayer){
 //                        logger.info("found requested villager entity");
                         int reputation = villager.getPlayerReputation(player);
-                        logger.info("reputation: {}", reputation);
 
                         // This button will also be a convenient way to force a room rescore.
                         if(reputation >= SocialContractConfig.MIN_FOLLOW_REPUTATION && Happiness.check(villager, SocialContractConfig.MIN_FOLLOW_HAPPINESS, true, false)){
@@ -73,16 +70,11 @@ public class PacketHandlers {
 //                            player.containerMenu.removed(player);
                             ((VillagerAccessor) villager).social_contract$stopTrading(); //I wonder which method is more elegant
                             if(brain.isActive(CustomActivities.FOLLOW_FRIEND)){
-                                logger.info("succeeded in setting activity");
                                 ServerPlayNetworking.send(serverPlayer,  new ClientBoundFollowConfirmPayload(villager.getId()));
                             }else{
                                 logger.info("failed in setting activity");
                             }
-                            //The reason the above function is 'IfPossible' is for two possible cases:
-                            // 1. the activity is simply never registered
-                            // 2. an activity has start conditions (memories that need to be present)
                         }else{
-                            logger.info("this player does not meet the requirements");
                             entity.playSound(SoundEvents.VILLAGER_NO);
                         }
 
@@ -100,7 +92,6 @@ public class PacketHandlers {
                     Player player = context.player();
                     Entity entity = player.level().getEntity(payload.entityId());
                     AbstractContainerMenu playerMenu = player.containerMenu;
-                    ServerLevel serverLevel = context.player().level();
 
                     if(playerMenu.containerId != payload.containerId()){
                         logger.warn("attested containerId and found containerId do not match");

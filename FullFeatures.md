@@ -5,6 +5,7 @@
    - The scoring happens via a simple flood fill originating from the bed, where full blocks are considered solid as well as doors. Light levels are checked at each block.
    - In the scoring process, if beds that are claimed by other Villagers are found, the score will be evenly distributed between all bed owners.
    - The Scoring process only occurs when the Happiness value is needed, with an additional cooldown of <2 minutes.
+   - The heuristic the flood fill uses can be configured via the max_room_size gamerule.
 <br><br>
 2. Villagers will try to stay in the light. 
    - When Villagers wonder, they will always wonder on blocks near 
@@ -13,7 +14,7 @@
 <br><br>
 3. Villagers now have a "Happiness" value
    - This value corresponds to how satisfied a Villager is with its current living situation.
-   - The happiness system works simmilar to the reputation system, with multiple types of happiness sources.
+   - The happiness system works similar to the reputation system, with multiple types of happiness sources.
    - Currently, there are 5 types of happiness
      - ROOM: tied to how nice a Villager's room is.
      - TRADE: tied to trading
@@ -37,6 +38,7 @@
       <br><br>
 7. A Villager dying will greatly decrease the Happiness of all nearby Villagers, regardless of if they saw it or not.
    - Villagers that this concerns will emit particles.
+   - The effective range can be configured via the death_report_radius gamerule
      <br><br>
 8. The Player can request that a Villager follow them.
    - The villager will only accept if it meets a minimum Happiness value and has a minimum reputation with the Player.
@@ -87,7 +89,7 @@
 24. Villagers will not pathfind to fall more than 1 block, unless panicking.
 <br><br>
 25. A new Light source has been added called the 'Villager Light'
-    - The Villager Light has three 3 light stages, burning out over time
+    - The Villager Light has 3 light stages, burning out over time
     - Villager lights will burn zombies within a range dependant on its light stage.
     - Villager lights will effect zombies with Slowness of level equivalent to their stage within the burn range.
 <br><br>

@@ -1,7 +1,6 @@
 package jlopez271828.social_contract.datagen.lang;
 
 import jlopez271828.social_contract.CustomBlocks;
-import jlopez271828.social_contract.CustomItems;
 import jlopez271828.social_contract.ExtraVillagerScreenWidgets;
 import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.types.CustomEnchantmentTags;

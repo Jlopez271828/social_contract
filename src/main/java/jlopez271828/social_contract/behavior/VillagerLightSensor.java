@@ -1,7 +1,6 @@
 package jlopez271828.social_contract.behavior;
 
 import jlopez271828.social_contract.CustomBlocks;
-import jlopez271828.social_contract.Social_contract;
 import jlopez271828.social_contract.types.AttachmentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -35,8 +34,9 @@ public class VillagerLightSensor extends Sensor<Villager> {
                     BlockPos testPos = center.offset(x, y, z);
                     BlockState state = level.getBlockState(testPos);
                     if (state.is(CustomBlocks.VILLAGER_LIGHT_BLOCKITEM)) {
-                        results.add(new GlobalPos(level.dimension(), testPos));
-                        Social_contract.LOGGER.debug("found villager light");
+                        if(!results.contains(testPos)){
+                            results.add(new GlobalPos(level.dimension(), testPos));
+                        }
                     }
                 }
             }

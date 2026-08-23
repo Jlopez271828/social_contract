@@ -1,6 +1,5 @@
 package jlopez271828.social_contract.datagen.lang;
 
-import jlopez271828.social_contract.CustomItems;
 import jlopez271828.social_contract.ExtraVillagerScreenWidgets;
 import jlopez271828.social_contract.types.CustomItemTags;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;

@@ -40,7 +40,7 @@ Villagers that have reached the max happiness tier will obtain a trade for a 'Vi
 
 A new Villager themed light block has been added to the game. This block, called the 'Villager Light', will burn and inflict slowness on zombies near it. 
 However, it will gradually wither away over time. Villagers that come by withered lights will re-light them. This light can be
-crafted with 9 iron ingots, and a Villager Totem.
+crafted with 8 iron ingots, and a Villager Totem.
 
 See [Full Features](FullFeatures.md) for a complete list of added features.
 

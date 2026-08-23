@@ -9,7 +9,6 @@ import jlopez271828.social_contract.types.AttachmentTypes;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -21,7 +20,6 @@ import net.minecraft.util.FormattedCharSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -158,7 +156,6 @@ public class ExtraVillagerScreenWidgets {
                                 Button
                                         .builder(Component.empty(),
                                                 button -> {
-                                                    logger.info("the follow button has been pushed");
                                                     if(client.player == null){
                                                         return;
                                                     }
@@ -180,7 +177,6 @@ public class ExtraVillagerScreenWidgets {
                                     .builder(
                                             Component.empty(),
                                             button -> {
-                                                logger.info("the give button was pushed");
                                                 if(client.player == null){
                                                     return;
                                                 }
