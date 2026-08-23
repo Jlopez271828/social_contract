@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "social_contract:villager_light"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_villager_totem": {
+      "conditions": {
+        "items": [
+          {
+            "items": "social_contract:villager_totem"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_villager_totem"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "social_contract:villager_light"
+    ]
+  }
+}

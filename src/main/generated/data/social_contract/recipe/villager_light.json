@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "i": "minecraft:iron_nugget",
+    "v": "social_contract:villager_totem"
+  },
+  "pattern": [
+    "iii",
+    "ivi",
+    "iii"
+  ],
+  "result": {
+    "id": "social_contract:villager_light"
+  }
+}

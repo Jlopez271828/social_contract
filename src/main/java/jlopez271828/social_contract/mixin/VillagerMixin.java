@@ -193,29 +193,31 @@ public abstract class VillagerMixin extends AbstractVillager  {
 
             }
 
-        }else if(data.profession().is(VillagerProfession.CLERIC)){
+        }
+
+
 
             int professionLevel = data.level();
 
-            if(professionLevel > 4){
+        if(professionLevel > 4){
 
-                if(this.offers == null){
-                    return;
-                }
-
-                this.offers.add(
-                        new MerchantOffer(
-                                new ItemCost(Items.LANTERN),
-                                Optional.of(new ItemCost(Items.EMERALD, 3)),
-                                new ItemStack(CustomBlocks.VILLAGER_LIGHT_BLOCKITEM),
-                                12,
-                                SocialContractConfig.xpPerLevel[4],
-                                SocialContractConfig.ENCHANTED_BOOK_MULTIPLIER
-                        )
-                );
+            if(this.offers == null){
+                return;
             }
 
+            this.offers.add(
+                    new MerchantOffer(
+                            new ItemCost(Items.EMERALD, 10),
+                            Optional.of(new ItemCost(Items.GOLD_INGOT, 10)),
+                            new ItemStack(CustomItems.VILLAGER_TOTEM),
+                            1,
+                            SocialContractConfig.xpPerLevel[4],
+                            SocialContractConfig.ENCHANTED_BOOK_MULTIPLIER
+                    )
+            );
         }
+
+
 
 
 

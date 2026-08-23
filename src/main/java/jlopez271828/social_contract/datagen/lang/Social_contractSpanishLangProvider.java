@@ -18,7 +18,7 @@ public class Social_contractSpanishLangProvider extends FabricLanguageProvider {
     @Override
     public void generateTranslations(HolderLookup.Provider holderLookup, TranslationBuilder translationBuilder) {
 
-        translationBuilder.add(CustomItems.BOUQUET, "Ramo");
+
         translationBuilder.add(ExtraVillagerScreenWidgets.FOLLOW_BUTTON_START_TOOLTIP_KEY, "Pedir a un aldeano que te siga");
         translationBuilder.add(ExtraVillagerScreenWidgets.FOLLOW_BUTTON_STOP_TOOLTIP_KEY, "Haz que este aldeano deje de seguirte.");
         translationBuilder.add(ExtraVillagerScreenWidgets.GIFT_BUTTON_TOOLTIP_KEY, "Dale un regalo a este aldeano. :)");

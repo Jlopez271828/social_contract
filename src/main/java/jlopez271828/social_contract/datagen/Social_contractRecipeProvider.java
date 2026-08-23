@@ -1,5 +1,6 @@
 package jlopez271828.social_contract.datagen;
 
+import jlopez271828.social_contract.CustomBlocks;
 import jlopez271828.social_contract.CustomItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
@@ -11,6 +12,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.tags.BlockItemTags;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -27,14 +29,14 @@ public class Social_contractRecipeProvider extends FabricRecipeProvider {
             public void buildRecipes() {
                 HolderLookup.RegistryLookup<Item> itemLookup = registries.lookupOrThrow(Registries.ITEM);
 
-                ShapelessRecipeBuilder builder = shapeless(RecipeCategory.DECORATIONS, CustomItems.BOUQUET);
-                for(int i = 0; i < 6; i++){
-                    builder.requires(BlockItemTags.FLOWERS.item());
-                }
-
-                builder.unlockedBy("has_tag_" + BlockItemTags.FLOWERS, has(BlockItemTags.FLOWERS.item()));
-
-                builder.save(this.output);
+                shaped(RecipeCategory.MISC, CustomBlocks.VILLAGER_LIGHT_BLOCKITEM)
+                        .pattern("iii")
+                        .pattern("ivi")
+                        .pattern("iii")
+                        .define('i', Items.IRON_NUGGET)
+                        .define('v', CustomItems.VILLAGER_TOTEM)
+                        .unlockedBy(getHasName(CustomItems.VILLAGER_TOTEM), has(CustomItems.VILLAGER_TOTEM))
+                        .save(output);
 
             }
         };

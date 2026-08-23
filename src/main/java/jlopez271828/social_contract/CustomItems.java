@@ -13,24 +13,20 @@ import java.util.function.Function;
 
 public class CustomItems {
 
-    public static final Item BOUQUET = register("bouquet", Item::new, new Item.Properties());
+    public static final Item VILLAGER_TOTEM = register(CustomItemIds.VILLAGER_TOTEM_KEY, Item::new, new Item.Properties());
 
-//    public static final Item VILLAGER_LIGHT = register("villager_light", Item::new, new Item.Properties());
+    public static Item register(ResourceKey<Item> itemKey, Function<Item.Properties, Item> itemFactory, Item.Properties settings) {
+        // Create the item instance.
+        Item item = itemFactory.apply(settings.setId(itemKey));
 
-
-    public static <T extends Item> T register(String name, Function<Item.Properties, T> itemFactory, Item.Properties settings){
-
-        ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Social_contract.MOD_ID, name));
-
-        T item = itemFactory.apply(settings.setId(itemKey));
-
+        // Register the item.
         Registry.register(BuiltInRegistries.ITEM, itemKey, item);
 
         return item;
     }
 
     public static void initialize(){
-        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.NATURAL_BLOCKS).register((creativeTab) -> {creativeTab.accept(CustomItems.BOUQUET);});
+        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.NATURAL_BLOCKS).register((creativeTab) -> {creativeTab.accept(CustomItems.VILLAGER_TOTEM);});
 
     }
 

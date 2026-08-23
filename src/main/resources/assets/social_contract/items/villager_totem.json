@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "social_contract:item/bouquet"
+    "model": "social_contract:item/villager_totem"
   }
 }

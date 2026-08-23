@@ -208,7 +208,7 @@ public class Social_contract implements ModInitializer {
 
     public static void constrainOffers(MerchantOffers offers, int numAvailable){
 
-        if(numAvailable <= 0){
+        if(numAvailable < 0){
             return;
         }
 

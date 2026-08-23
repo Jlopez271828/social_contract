@@ -1,10 +1,10 @@
 {
+  "block.social_contract.villager_light": "Villager Light",
   "gamerule.social_contract.do_villager_illager_conversions": "Determines whether Villagers will convert to Illagers when they are low enough on Happiness",
   "gamerule.social_contract.max_room_volume": "Determines how much volume the scoring algorithm will search before concluding that the room is not enclosed",
   "gamerule.social_contract.max_villager_wonder_distance": "The distance a Villager can wonder from its Bed, if it has one.",
   "gamerule.social_contract.room_rescore_cooldown": "The Time interval before a room can be rescored",
   "gamerule.social_contract.villager_death_report_radius": "The radius in which a Villager's death will influence nearby Villagers' Happiness",
-  "item.social_contract.bouquet": "Bouquet",
   "social_contract.do_villager_illager_conversions": "Do Villager Illager Conversions",
   "social_contract.max_room_volume": "Max Villager Room Volume",
   "social_contract.max_villager_wonder_distance": "Max Villager Wonder Distance",
@@ -17,5 +17,10 @@
   "tag.item.social_contract.villager_giftable": "villager giftable",
   "text.social_contract.follow_button_start_tooltip": "Request Villager Follow You",
   "text.social_contract.follow_button_stop_tooltip": "Make Villager Stop Following",
-  "text.social_contract.gift_button_tooltip": "Give This Villager a Gift :)"
+  "text.social_contract.gift_button_tooltip": "Give This Villager a Gift :)",
+  "text.social_contract.gift_value": "GIFT",
+  "text.social_contract.pain_value": "PAIN",
+  "text.social_contract.room_value": "ROOM",
+  "text.social_contract.total_happiness": "Total Happiness",
+  "text.social_contract.trade_value": "TRADE"
 }

@@ -9,6 +9,7 @@ import jlopez271828.social_contract.types.AttachmentTypes;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.MerchantScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -20,8 +21,10 @@ import net.minecraft.util.FormattedCharSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ExtraVillagerScreenWidgets {
 
@@ -58,6 +61,11 @@ public class ExtraVillagerScreenWidgets {
     public static final String GIFT_BUTTON_TOOLTIP_KEY = BASE_KEY + "gift_button_tooltip";
     public static final String FOLLOW_BUTTON_STOP_TOOLTIP_KEY = BASE_KEY + "follow_button_stop_tooltip";
     public static final String FOLLOW_BUTTON_START_TOOLTIP_KEY = BASE_KEY + "follow_button_start_tooltip";
+    public static final String PAIN_VALUE_KEY = BASE_KEY + "pain_value";
+    public static final String ROOM_VALUE_KEY = BASE_KEY + "room_value";
+    public static final String GIFT_VALUE_KEY = BASE_KEY + "gift_value";
+    public static final String TRADE_VALUE_KEY = BASE_KEY + "trade_value";
+    public static final String TOTAL_HAPPINESS_KEY = BASE_KEY + "total_happiness";
 
 
     public static final int HAPPINESS_STAGE_2 = SocialContractConfig.MIN_HAPPINESS_LEVEL_2;
@@ -109,6 +117,13 @@ public class ExtraVillagerScreenWidgets {
                     strings.add(FormattedCharSequence.forward("TRADE: " + tradeHappiness, Style.EMPTY));
                     strings.add(FormattedCharSequence.forward("ROOM: " + roomHappiness, Style.EMPTY));
                     strings.add(FormattedCharSequence.forward("PAIN: " + pain, Style.EMPTY.withColor(TextColor.RED)));
+
+                    List<Component> texts = new ArrayList<>();
+                    texts.add(Component.translatable(TOTAL_HAPPINESS_KEY).append(": " + happiness));
+                    texts.add(Component.translatable(GIFT_VALUE_KEY).append(": " + giftHappiness));
+                    texts.add(Component.translatable(ROOM_VALUE_KEY).append(": " + roomHappiness));
+                    texts.add(Component.translatable(TRADE_VALUE_KEY).append(": " + tradeHappiness));
+                    texts.add(Component.translatable(PAIN_VALUE_KEY).append(": " + pain).withColor(TextColor.RED));
 
 
 
@@ -222,7 +237,7 @@ public class ExtraVillagerScreenWidgets {
 
                         if(mouseX > leftBoundX && mouseX < rightBoundX && mouseY > topBoundY && mouseY < bottomBoundY){
 //                            drawContext.tooltip(screen.getFont(), components, xo, yo, );
-                            drawContext.setTooltipForNextFrame(strings, mouseX, mouseY);
+                            drawContext.setTooltipForNextFrame(screen.getFont(), texts, Optional.empty(), mouseX, mouseY);
                         }
 
 

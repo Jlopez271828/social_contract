@@ -16,7 +16,7 @@ public class Social_contractFrenchLangProvider extends FabricLanguageProvider {
     @Override
     public void generateTranslations(HolderLookup.Provider holderLookup, TranslationBuilder translationBuilder) {
 
-        translationBuilder.add(CustomItems.BOUQUET, "Bouquet");
+
     }
 
 }

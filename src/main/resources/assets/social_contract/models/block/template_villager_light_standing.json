@@ -102,6 +102,7 @@
       }
     }
   ],
+  "gui_light": "front",
   "display": {
     "thirdperson_righthand": {
       "translation": [0, 4, 0],
@@ -122,7 +123,7 @@
     },
     "ground": {
       "translation": [0, 2.75, 0],
-      "scale": [1, 1, 0.2]
+      "scale": [0.8, 0.8, 0.18]
     },
     "gui": {
       "translation": [0, 2, 0],

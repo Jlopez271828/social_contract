@@ -1,6 +1,5 @@
 // 26.2	-999999999-01-01T00:00:00	social_contract/Social_contractModelProvider
 d06a9c02898ca217fd8566f3de27df1a1fcc31f0 assets/social_contract/blockstates/villager_light.json
-b64c7df12f87ce6f1a94a7f301e2d424b2ccea91 assets/social_contract/items/bouquet.json
 640083dd9cce818bbb1bbe49dc1505419b4433ad assets/social_contract/items/villager_light.json
 8568cf94f4d30aae30f478fa3bcf62e7ea129f7d assets/social_contract/models/block/villager_light_hanging_a_0.json
 16d8e893353b0c4013e57a8c44d654db55cff7cd assets/social_contract/models/block/villager_light_hanging_a_1.json
@@ -14,4 +13,3 @@ e80a9d6ecfb04aa409cd129c0781d4028a5ec398 assets/social_contract/models/block/vil
 d37fdee5f99c00940d81ec17571b5cb62bc8fc86 assets/social_contract/models/block/villager_light_standing_1.json
 f7d10f15bc45dea19ae55cf1bc15b2909bc6c9dc assets/social_contract/models/block/villager_light_standing_2.json
 2dece4755bf486222e2aa5a91e62482d24145658 assets/social_contract/models/block/villager_light_standing_3.json
-0e1a7bb7d44010ecae55fd120896e8119358e31b assets/social_contract/models/item/bouquet.json

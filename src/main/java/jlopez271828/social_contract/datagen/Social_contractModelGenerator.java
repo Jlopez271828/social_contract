@@ -28,7 +28,6 @@ public class Social_contractModelGenerator extends FabricModelProvider {
 
     @Override
     public void generateItemModels(ItemModelGenerators itemModelGenerator) {
-        itemModelGenerator.generateFlatItem(CustomItems.BOUQUET, ModelTemplates.FLAT_ITEM);
     }
 
     @Override

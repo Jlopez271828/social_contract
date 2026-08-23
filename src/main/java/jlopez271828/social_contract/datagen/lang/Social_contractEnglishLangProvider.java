@@ -27,7 +27,6 @@ public class Social_contractEnglishLangProvider extends FabricLanguageProvider {
     @Override
     public void generateTranslations(HolderLookup.Provider holderLookup, TranslationBuilder translationBuilder) {
 
-        translationBuilder.add(CustomItems.BOUQUET, "Bouquet");
         translationBuilder.add("social_contract.options.useless", "Useless Button");
         translationBuilder.add(CustomBlocks.VILLAGER_LIGHT_BLOCKITEM, "Villager Light");
 
@@ -35,6 +34,11 @@ public class Social_contractEnglishLangProvider extends FabricLanguageProvider {
         translationBuilder.add(ExtraVillagerScreenWidgets.FOLLOW_BUTTON_START_TOOLTIP_KEY, "Request Villager Follow You");
         translationBuilder.add(ExtraVillagerScreenWidgets.FOLLOW_BUTTON_STOP_TOOLTIP_KEY, "Make Villager Stop Following");
         translationBuilder.add(ExtraVillagerScreenWidgets.GIFT_BUTTON_TOOLTIP_KEY, "Give This Villager a Gift :)");
+        translationBuilder.add(ExtraVillagerScreenWidgets.TOTAL_HAPPINESS_KEY, "Total Happiness");
+        translationBuilder.add(ExtraVillagerScreenWidgets.GIFT_VALUE_KEY, "GIFT");
+        translationBuilder.add(ExtraVillagerScreenWidgets.ROOM_VALUE_KEY, "ROOM");
+        translationBuilder.add(ExtraVillagerScreenWidgets.TRADE_VALUE_KEY, "TRADE");
+        translationBuilder.add(ExtraVillagerScreenWidgets.PAIN_VALUE_KEY, "PAIN");
 
         //Tag translations
         translationBuilder.add(CustomItemTags.VILLAGER_GIFTABLE, "villager giftable");

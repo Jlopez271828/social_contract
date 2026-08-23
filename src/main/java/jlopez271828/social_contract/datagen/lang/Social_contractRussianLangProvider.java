@@ -18,7 +18,6 @@ public class Social_contractRussianLangProvider extends FabricLanguageProvider {
     public void generateTranslations(HolderLookup.Provider holderLookup, TranslationBuilder translationBuilder) {
 
         // note: Mojang calls Villagers "крестья́не", so I will too.
-        translationBuilder.add(CustomItems.BOUQUET, "Букет");
         translationBuilder.add(ExtraVillagerScreenWidgets.FOLLOW_BUTTON_START_TOOLTIP_KEY, "Запросить у крестья́нина следовать за вами");
         translationBuilder.add(ExtraVillagerScreenWidgets.FOLLOW_BUTTON_STOP_TOOLTIP_KEY, "перестать следить за вами.");
         translationBuilder.add(ExtraVillagerScreenWidgets.GIFT_BUTTON_TOOLTIP_KEY, "Подари подарок этому крестьянину");
